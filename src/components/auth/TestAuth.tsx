@@ -8,7 +8,7 @@ function TestAuth() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/auth/test");
+        const response = await fetch(import.meta.env.VITE_SERVER_URI + "/auth/test");
         
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
