@@ -2,6 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import VarIntro from './pages/VarIntro'
+
+// <h1 className="text-3xl font-bold underline">Vite + React</h1>
 
 function App() {
   const [count, setCount] = useState(0)
@@ -16,7 +20,10 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1 class="text-3xl font-bold underline">Vite + React</h1>
+      <Routes>
+        <Route path="/" element={<VarIntro />} />
+        <Route path="/:namespace" element={<VarIntro />} />
+      </Routes>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
