@@ -1,0 +1,16 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running pre-push checks..."
+
+# 1. Run the build command
+npm run build
+
+# Check the exit code of the build command.
+# If it's not 0, the command failed.
+if [ $? -ne 0 ]; then
+  echo "Build failed. Aborting push."
+  exit 1
+fi
+
+echo "All checks passed. Pushing to remote."
