@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import VarIntro from './pages/VarIntro'
+import TestAuth from './components/auth/TestAuth'
 
 // <h1 className="text-3xl font-bold underline">Vite + React</h1>
 
@@ -23,6 +24,7 @@ function App() {
       <Routes>
         <Route path="/" element={<VarIntro />} />
         <Route path="/:namespace" element={<VarIntro />} />
+        <Route path="/auth/test" element={<TestAuth />} />
       </Routes>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
