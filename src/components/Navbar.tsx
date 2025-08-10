@@ -4,7 +4,7 @@ import { useSidebar } from '../context/SidebarContext';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-   const { isOpen, toggleSidebar } = useSidebar();
+   const { toggleSidebar } = useSidebar();
 
 
   const toggleMenu = () => {
