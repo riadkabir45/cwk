@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-4">
-            <Link to="/" className="text-lg font-bold text-indigo-600">Home</Link>
+            <button onClick={() => toggleSidebar()} className="text-lg font-bold text-indigo-600">CWK</button>
             <Link
               to="/"
               className="px-3 py-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
