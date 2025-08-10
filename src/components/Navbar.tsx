@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useSidebar } from '../context/SidebarContext';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+   const { isOpen, toggleSidebar } = useSidebar();
+
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-white shadow-sm z-40">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="font-bold text-xl text-indigo-600">
-                CWK
+                <button onClick={() => toggleSidebar() } >CWK</button>
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:items-center">
