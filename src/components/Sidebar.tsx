@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
 
 const Sidebar: React.FC = () => {
-  const { isOpen, toggleSidebar } = useSidebar();
+  const { toggleSidebar } = useSidebar();
   const location = useLocation();
   const [activeLink, setActiveLink] = useState('/');
 
