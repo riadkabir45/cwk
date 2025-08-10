@@ -4,7 +4,7 @@ import VarIntro from './pages/VarIntro'
 import TestAuth from './components/auth/TestAuth'
 import SignUp from './components/auth/SignUp'
 import Login from './components/auth/Login'
-import Home from './components/Home'
+import Home from './pages/Home'
 import MainLayout from './components/layout/MainLayout'
 import AuthLayout from './components/layout/AuthLayout'
 
