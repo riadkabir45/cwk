@@ -4,44 +4,56 @@ import { useSidebar } from '../context/SidebarContext';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTasksOpen, setIsTasksOpen] = useState(false);
    const { toggleSidebar } = useSidebar();
 
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+  const toggleTasks = () => setIsTasksOpen(!isTasksOpen);
 
   return (
     <nav className="bg-white shadow-sm z-40">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="font-bold text-xl text-indigo-600">
-                <button onClick={() => toggleSidebar() } >CWK</button>
-              </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:items-center">
-              <div className="space-x-4">
-                <Link
-                  to="/"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 transition-colors duration-200"
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 transition-colors duration-200"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/variables"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 transition-colors duration-200"
-                >
-                  Variables
-                </Link>
-              </div>
+          <div className="flex items-center space-x-4">
+            <Link to="/" className="text-lg font-bold text-indigo-600">Home</Link>
+            <Link
+              to="/"
+              className="px-3 py-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+            >
+              Dashboard
+            </Link>
+            {/* Tasks Dropdown */}
+            <div className="relative">
+              <button
+                onClick={toggleTasks}
+                className="px-3 py-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-gray-50 focus:outline-none"
+              >
+                Tasks
+                <svg className="inline ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isTasksOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg z-50">
+                  <Link
+                    to="/tasks/create"
+                    className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                    onClick={() => setIsTasksOpen(false)}
+                  >
+                    Create Task
+                  </Link>
+                  <Link
+                    to="/tasks/statuses"
+                    className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                    onClick={() => setIsTasksOpen(false)}
+                  >
+                    Task Statuses
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">

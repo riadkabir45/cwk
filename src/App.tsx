@@ -7,6 +7,8 @@ import Login from './components/auth/Login'
 import Home from './pages/Home'
 import MainLayout from './components/layout/MainLayout'
 import AuthLayout from './components/layout/AuthLayout'
+import CreateTask from './pages/CreateTask';
+import TaskStatuses from './pages/TaskStatuses';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/variables" element={<VarIntro />} />
         <Route path="/:namespace" element={<VarIntro />} />
+        <Route path="/tasks/create" element={<CreateTask />} />
+        <Route path="/tasks/statuses" element={<TaskStatuses />} />
       </Route>
       
       {/* Auth layout without sidebar */}
