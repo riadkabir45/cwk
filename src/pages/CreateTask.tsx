@@ -6,11 +6,11 @@ const TASK_TYPES = [
 ];
 
 const INTERVAL_UNITS = [
-  { value: 'hour', label: 'Hour(s)' },
-  { value: 'day', label: 'Day(s)' },
-  { value: 'week', label: 'Week(s)' },
-  { value: 'month', label: 'Month(s)' },
-  { value: 'year', label: 'Year(s)' },
+  { value: 'hour', label: 'Hours' },
+  { value: 'day', label: 'Days' },
+  { value: 'week', label: 'Weeks' },
+  { value: 'month', label: 'Months' },
+  { value: 'year', label: 'Years' },
 ];
 
 const CreateTask: React.FC = () => {
@@ -19,12 +19,29 @@ const CreateTask: React.FC = () => {
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState('day');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Submit logic here
-    alert(
-      `Task Created:\nName: ${taskName}\nType: ${TASK_TYPES.find(t => t.value === taskType)?.label}\nInterval: Every ${interval} ${INTERVAL_UNITS.find(u => u.value === intervalUnit)?.label}`
-    );
+    const data = {
+      taskName: taskName,
+      taskIntervalType: INTERVAL_UNITS.find(u => u.value === intervalUnit)?.label.toUpperCase(),
+      isNumericalTask: taskType === 'number',
+      taskInterval: interval,
+    };
+
+    try {
+      const response = await fetch(import.meta.env.VITE_SERVER_URI + '/tasks/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (response.ok) {
+        alert('Task created successfully!');
+      } else {
+        alert('Failed to create task.');
+      }
+    } catch (error) {
+      alert('Error creating task.');
+    }
   };
 
   return (
