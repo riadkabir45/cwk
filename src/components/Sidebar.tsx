@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar: React.FC = () => {
   const { isOpen, toggleSidebar } = useSidebar();
+  const { user } = useAuth();
   const location = useLocation();
   const [activeLink, setActiveLink] = useState('/');
 
@@ -12,6 +14,10 @@ const Sidebar: React.FC = () => {
     setActiveLink(location.pathname);
   }, [location]);
 
+  // Don't render sidebar if user is not authenticated
+  if (!user) {
+    return null;
+  }
 
   const navLinks = [
     { to: '/', label: 'Home', icon: 'home' },
@@ -67,6 +73,20 @@ const Sidebar: React.FC = () => {
     }
   };
 
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.first_name && user?.user_metadata?.last_name) {
+      return `${user.user_metadata.first_name} ${user.user_metadata.last_name}`;
+    }
+    return user?.email || 'User';
+  };
+
+  const getUserInitials = () => {
+    if (user?.user_metadata?.first_name && user?.user_metadata?.last_name) {
+      return `${user.user_metadata.first_name[0]}${user.user_metadata.last_name[0]}`.toUpperCase();
+    }
+    return user?.email?.[0]?.toUpperCase() || 'U';
+  };
+
   return (
     <>
       {/* Overlay to close sidebar on mobile */}
@@ -113,10 +133,10 @@ const Sidebar: React.FC = () => {
                           <div className="p-4 border-t border-gray-200 overflow-clip">
                             <div className="flex items-center">
                               <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold">
-                                U
+                                {getUserInitials()}
                               </div>
                               <div className="ml-3">
-                                <p className="text-sm font-medium text-gray-700">User Account</p>
+                                <p className="text-sm font-medium text-gray-700">{getUserDisplayName()}</p>
                                 <Link 
                                   to="/profile" 
                                   className="text-xs text-gray-500 hover:text-indigo-600"
