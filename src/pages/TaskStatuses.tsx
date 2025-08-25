@@ -95,10 +95,11 @@ const TaskStatuses: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh]">
-      <h2 className="text-xl font-bold mb-6">Task Statuses</h2>
+      <h2 className="text-xl font-bold mb-6">Task Status</h2>
       <MessageBox message={message} />
       <div className="space-y-6">
-        {taskStatuses.map(task => (
+        {taskStatuses.length > 0 ? (
+          taskStatuses.map(task => (
           <Tile
             key={task.id}
             className="relative"
@@ -145,7 +146,6 @@ const TaskStatuses: React.FC = () => {
                 </span>
               </div>
             )}
-            {/* Update form */}
             {expandedTaskId === task.id && (
               <form
                 onSubmit={e => handleUpdateSubmit(e, task)}
@@ -175,7 +175,9 @@ const TaskStatuses: React.FC = () => {
               </form>
             )}
           </Tile>
-        ))}
+        )))
+        :(<div className='text-center text-gray-500'>No tasks found</div>)
+        }
       </div>
     </div>
   );
