@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
+import MessageBox, { MessageState } from '../components/MessageBox';
 
 const TASK_TYPES = [
   { value: 'number', label: 'Number' },
   { value: 'yesno', label: 'Yes / No' },
 ];
-
-type MessageState = {
-  text: string;
-  type: 'success' | 'error' | null;
-};
 
 const CreateTask: React.FC = () => {
   const [taskName, setTaskName] = useState('');
@@ -41,18 +37,7 @@ const CreateTask: React.FC = () => {
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh] flex flex-col justify-center">
       <h2 className="text-xl font-bold mb-4">Create Task</h2>
-      {/* Inline message box */}
-      <div
-        className={`
-          mb-4 px-4 py-2 rounded text-sm transition-opacity duration-300
-          ${!message.type ? 'opacity-0 h-0' : ''}
-          ${message.type === 'success' ? 'bg-green-100 text-green-700 opacity-100' : ''}
-          ${message.type === 'error' ? 'bg-red-100 text-red-700 opacity-100' : ''}
-        `}
-        aria-live="polite"
-      >
-        {message.text}
-      </div>
+      <MessageBox message={message} />
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-medium mb-1">Task Name</label>
