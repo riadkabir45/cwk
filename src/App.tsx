@@ -11,6 +11,7 @@ import AuthLayout from './components/layout/AuthLayout'
 import CreateTask from './pages/CreateTask';
 import TaskStatuses from './pages/TaskStatuses';
 import ProtectedRoute from './components/ProtectedRoute'
+import TaskList from './pages/TaskList'
 
 function App() {
   return (
@@ -40,6 +41,11 @@ function App() {
         <Route path="/tasks/statuses" element={
           <ProtectedRoute>
             <TaskStatuses />
+          </ProtectedRoute>
+        } />
+        <Route path="/tasks/list" element={
+          <ProtectedRoute>
+            <TaskList />
           </ProtectedRoute>
         } />
       </Route>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MessageBox, { MessageState } from '../components/MessageBox';
+import MessageBox, { type MessageState } from '../components/MessageBox';
 
 const TASK_TYPES = [
   { value: 'number', label: 'Number' },
