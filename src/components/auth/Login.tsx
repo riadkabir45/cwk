@@ -1,14 +1,69 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the redirect path from location state or default to home
+  const from = location.state?.from?.pathname || '/';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your authentication logic here
-    console.log('Login attempt with:', { email, password });
+    setLoading(true);
+    setError(null);
+    
+    const { error } = await signIn(email, password);
+    
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    } else {
+      // Redirect to the page they were trying to visit or home
+      navigate(from, { replace: true });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError(null);
+    
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/#${from}`
+      }
+    });
+    
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  const handleGitHubSignIn = async () => {
+    setLoading(true);
+    setError(null);
+    
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/#${from}`
+      }
+    });
+    
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -19,10 +74,19 @@ const Login: React.FC = () => {
             <h1 className="text-2xl xl:text-3xl font-extrabold">
               Log in
             </h1>
+            
+            {error && (
+              <div className="w-full mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
+            
             <div className="w-full flex-1 mt-8">
               <div className="flex flex-col items-center">
                 <button
-                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed">
                   <div className="bg-white p-2 rounded-full">
                     <svg className="w-4" viewBox="0 0 533.5 544.3">
                       <path
@@ -45,7 +109,9 @@ const Login: React.FC = () => {
                 </button>
 
                 <button
-                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
+                  onClick={handleGitHubSignIn}
+                  disabled={loading}
+                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5 disabled:opacity-50 disabled:cursor-not-allowed">
                   <div className="bg-white p-1 rounded-full">
                     <svg className="w-6" viewBox="0 0 32 32">
                       <path fillRule="evenodd"
@@ -73,6 +139,7 @@ const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required 
+                  disabled={loading}
                 />
                 <input
                   className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
@@ -81,19 +148,23 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required 
+                  disabled={loading}
                 />
-                <a
+                <Link
+                  to="/auth/forgot-password"
                   className="block text-xs text-gray-600 mt-2 text-right hover:underline"
-                  href="#"
                 >
                   Forgot your password?
-                </a>
+                </Link>
                 <button
                   type="submit"
-                  className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
-                  <span className="ml-3">
-                    Log In
-                  </span>
+                  disabled={loading}
+                  className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+                  {loading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <span className="ml-3">Log In</span>
+                  )}
                 </button>
                 <p className="mt-6 text-xs text-gray-600 text-center">
                   Don't have an account?{' '}
