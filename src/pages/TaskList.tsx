@@ -23,7 +23,7 @@ const TaskList: React.FC = () => {
   const [intervalValue, setIntervalValue] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState('days');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
-  const { user } = useAuth();
+  const { user, session } = useAuth();
 
   const getUserId = () => {
     if (user?.id) {
@@ -33,7 +33,11 @@ const TaskList: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_SERVER_URI + '/tasks')
+    fetch(import.meta.env.VITE_SERVER_URI + '/tasks',{
+      headers: {
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    })
       .then(res => res.json())
       .then(data => {
         setTasks(data || []);
@@ -63,7 +67,10 @@ const TaskList: React.FC = () => {
         `${import.meta.env.VITE_SERVER_URI}/task-instances`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.access_token}`,
+           },
           body: JSON.stringify({
             "task": { "id" : task.id },
             "taskInterval": intervalValue,

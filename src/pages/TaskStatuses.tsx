@@ -14,7 +14,7 @@ interface TaskStatus {
 }
 
 const TaskStatuses: React.FC = () => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [taskStatuses, setTaskStatuses] = useState<TaskStatus[]>([]);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
@@ -29,7 +29,11 @@ const TaskStatuses: React.FC = () => {
 
   // Move fetch logic to a function
   const loadStatuses = () => {
-    fetch(import.meta.env.VITE_SERVER_URI + `/task-instances/userId/${getUserId()}`)
+    fetch(import.meta.env.VITE_SERVER_URI + `/task-instances/userId/${getUserId()}`, {
+      headers: {
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    })
       .then(res => res.json()
       )
       .then((data: TaskStatus[]) => {
@@ -44,7 +48,10 @@ const TaskStatuses: React.FC = () => {
         
         setTaskStatuses(data || []);
       })
-      .catch(() => setMessage({ text: 'Failed to load tasks.', type: 'error' }));
+      .catch((err) => {
+        console.error(err);
+        setMessage({ text: 'Failed to load tasks.', type: 'error' });
+      });
   };
 
   useEffect(() => {
@@ -81,7 +88,10 @@ const TaskStatuses: React.FC = () => {
         `${import.meta.env.VITE_SERVER_URI}/task-updates`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+             'Content-Type': 'application/json',
+             Authorization: `Bearer ${session?.access_token}`,
+          },
           body: JSON.stringify({
             "updateDescription":
               task.taskType.toLowerCase() === 'yes/no'

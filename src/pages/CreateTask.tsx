@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MessageBox, { type MessageState } from '../components/MessageBox';
+import { useAuth } from '../context/AuthContext';
 
 const TASK_TYPES = [
   { value: 'number', label: 'Number' },
@@ -10,6 +11,7 @@ const CreateTask: React.FC = () => {
   const [taskName, setTaskName] = useState('');
   const [taskType, setTaskType] = useState('number');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
+  const { session } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +23,10 @@ const CreateTask: React.FC = () => {
     try {
       const response = await fetch(import.meta.env.VITE_SERVER_URI + '/tasks', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
         body: JSON.stringify(data),
       });
       if (response.ok) {
