@@ -41,7 +41,6 @@ const TaskStatuses: React.FC = () => {
             return update;
           });
         });
-        console.log(data);
         
         setTaskStatuses(data || []);
       })
