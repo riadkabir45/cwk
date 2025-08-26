@@ -3,19 +3,19 @@ import Tile from '../components/Tile';
 import { useAuth } from '../context/AuthContext';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 
-interface TaskStatusesProps {
+interface TaskStatus {
   id: string;
   name: string;
   taskType: string;
   interval: number;
   intervalType: string;
   lastUpdated: string | null;
-  updates: (number | boolean)[];
+  updates: (number | boolean | string)[];
 }
 
 const TaskStatuses: React.FC = () => {
   const { user } = useAuth();
-  const [taskStatuses, setTaskStatuses] = useState<TaskStatusesProps[]>([]);
+  const [taskStatuses, setTaskStatuses] = useState<TaskStatus[]>([]);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
@@ -30,8 +30,19 @@ const TaskStatuses: React.FC = () => {
   // Move fetch logic to a function
   const loadStatuses = () => {
     fetch(import.meta.env.VITE_SERVER_URI + `/task-instances/userId/${getUserId()}`)
-      .then(res => res.json())
-      .then(data => {
+      .then(res => res.json()
+      )
+      .then((data: TaskStatus[]) => {
+        data.forEach(task => {
+          task.updates = task.updates.map(update => {
+            if (task.taskType.toLowerCase() === 'yes/no') {
+              return update === "true" ? true : false;
+            }
+            return update;
+          });
+        });
+        console.log(data);
+        
         setTaskStatuses(data || []);
       })
       .catch(() => setMessage({ text: 'Failed to load tasks.', type: 'error' }));
@@ -48,7 +59,7 @@ const TaskStatuses: React.FC = () => {
     setMessage({ text: '', type: null });
   };
 
-  const handleUpdateSubmit = async (e: React.FormEvent, task: TaskStatusesProps) => {
+  const handleUpdateSubmit = async (e: React.FormEvent, task: TaskStatus) => {
     e.preventDefault();
 
     // Validation
@@ -131,9 +142,9 @@ const TaskStatuses: React.FC = () => {
                     }`}
                   >
                     {task.taskType.toLowerCase() === 'yes/no'
-                      ? status
+                      ? (status
                         ? 'Yes'
-                        : 'No'
+                        : 'No')
                       : status}
                   </span>
                 )) : <span className="text-gray-500 italic">No statuses yet</span>}
