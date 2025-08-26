@@ -41,9 +41,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (event === 'SIGNED_IN' && session?.user) {
           // You can make a call to your Spring Boot backend here
           // to sync user data or create user profile
-          console.log('User signed in:', session.user)
         } else if (event === 'SIGNED_OUT') {
-          console.log('User signed out')
+          // User signed out
         }
       }
     )
