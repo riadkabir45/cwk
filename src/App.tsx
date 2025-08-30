@@ -10,8 +10,9 @@ import MainLayout from './components/layout/MainLayout'
 import AuthLayout from './components/layout/AuthLayout'
 import CreateTask from './pages/CreateTask';
 import TaskStatuses from './pages/TaskStatuses';
-import ProtectedRoute from './components/ProtectedRoute'
-import TaskList from './pages/TaskList'
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminPanel from './components/admin/AdminPanel';
+import TaskList from './pages/TaskList';
 
 function App() {
   return (
@@ -23,6 +24,12 @@ function App() {
             <Home />
           </ProtectedRoute>
         } />
+        <Route path="/admin" element={
+          <ProtectedRoute requiredRoles={['ADMIN', 'MODERATOR']}>
+            <AdminPanel />
+          </ProtectedRoute>
+        } />
+      </Route>
         <Route path="/variables" element={
           <ProtectedRoute>
             <VarIntro />
