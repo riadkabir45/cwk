@@ -11,6 +11,7 @@ import AuthLayout from './components/layout/AuthLayout'
 import CreateTask from './pages/CreateTask';
 import TaskStatuses from './pages/TaskStatuses';
 import ProtectedRoute from './components/ProtectedRoute'
+import AdminPanel from './components/admin/AdminPanel'
 
 function App() {
   return (
@@ -40,6 +41,11 @@ function App() {
         <Route path="/tasks/statuses" element={
           <ProtectedRoute>
             <TaskStatuses />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute requiredRoles={['ADMIN', 'MODERATOR']}>
+            <AdminPanel />
           </ProtectedRoute>
         } />
       </Route>

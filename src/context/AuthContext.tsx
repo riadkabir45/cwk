@@ -1,6 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import type { User, Session, AuthError } from '@supabase/supabase-js'
+import type { User as SupabaseUser, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { api } from '../lib/api'
+
+// Extended user interface with role information
+interface User extends SupabaseUser {
+  primaryRole?: string
+  roles?: string[]
+  firstName?: string
+  lastName?: string
+  mentorshipEligible?: boolean
+}
 
 interface AuthContextType {
   user: User | null
@@ -10,6 +20,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>
+  refreshUserData: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -19,12 +30,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Function to fetch and merge user data from backend
+  const refreshUserData = async () => {
+    if (!session) return
+
+    try {
+      const response = await api.get('/api/auth/me')
+      const backendUser = response.data
+      
+      // Merge Supabase user with backend user data
+      if (session.user) {
+        setUser({
+          ...session.user,
+          primaryRole: backendUser.primaryRole,
+          roles: backendUser.roles,
+          firstName: backendUser.firstName,
+          lastName: backendUser.lastName,
+          mentorshipEligible: backendUser.mentorshipEligible
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch user data from backend:', error)
+      // Fall back to Supabase user data only
+      if (session?.user) {
+        setUser(session.user)
+      }
+    }
+  }
+
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setSession(session)
-      setUser(session?.user ?? null)
+      if (session?.user) {
+        setUser(session.user)
+        // Fetch additional user data from backend
+        await refreshUserData()
+      }
       setLoading(false)
     }
 
@@ -34,13 +77,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session)
-        setUser(session?.user ?? null)
+        if (session?.user) {
+          setUser(session.user)
+          // Fetch additional user data from backend when auth state changes
+          await refreshUserData()
+        } else {
+          setUser(null)
+        }
         setLoading(false)
 
         // Optional: sync with backend when user signs in/out
         if (event === 'SIGNED_IN' && session?.user) {
-          // You can make a call to your Spring Boot backend here
-          // to sync user data or create user profile
           console.log('User signed in:', session.user)
         } else if (event === 'SIGNED_OUT') {
           console.log('User signed out')
@@ -93,6 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signOut,
     resetPassword,
+    refreshUserData,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
