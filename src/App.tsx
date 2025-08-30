@@ -29,7 +29,6 @@ function App() {
             <AdminPanel />
           </ProtectedRoute>
         } />
-      </Route>
         <Route path="/variables" element={
           <ProtectedRoute>
             <VarIntro />
