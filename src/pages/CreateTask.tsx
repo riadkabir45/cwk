@@ -1,35 +1,48 @@
 import React, { useState } from 'react';
+import MessageBox, { type MessageState } from '../components/MessageBox';
+import { useAuth } from '../context/AuthContext';
 
 const TASK_TYPES = [
   { value: 'number', label: 'Number' },
   { value: 'yesno', label: 'Yes / No' },
 ];
 
-const INTERVAL_UNITS = [
-  { value: 'hour', label: 'Hour(s)' },
-  { value: 'day', label: 'Day(s)' },
-  { value: 'week', label: 'Week(s)' },
-  { value: 'month', label: 'Month(s)' },
-  { value: 'year', label: 'Year(s)' },
-];
-
 const CreateTask: React.FC = () => {
   const [taskName, setTaskName] = useState('');
   const [taskType, setTaskType] = useState('number');
-  const [interval, setInterval] = useState(1);
-  const [intervalUnit, setIntervalUnit] = useState('day');
+  const [message, setMessage] = useState<MessageState>({ text: '', type: null });
+  const { session } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Submit logic here
-    alert(
-      `Task Created:\nName: ${taskName}\nType: ${TASK_TYPES.find(t => t.value === taskType)?.label}\nInterval: Every ${interval} ${INTERVAL_UNITS.find(u => u.value === intervalUnit)?.label}`
-    );
+    const data = {
+      taskName: taskName,
+      isNumericalTask: taskType === 'number',
+    };
+
+    try {
+      const response = await fetch(import.meta.env.VITE_SERVER_URI + '/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.ok) {
+        setMessage({ text: 'Task created successfully!', type: 'success' });
+      } else {
+        setMessage({ text: 'Failed to create task.', type: 'error' });
+      }
+    } catch (error) {
+      setMessage({ text: 'Error creating task.', type: 'error' });
+    }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh] flex flex-col justify-center">
       <h2 className="text-xl font-bold mb-4">Create Task</h2>
+      <MessageBox message={message} />
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-medium mb-1">Task Name</label>
@@ -52,28 +65,6 @@ const CreateTask: React.FC = () => {
               <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </select>
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Check Interval</label>
-          <div className="flex space-x-2">
-            <input
-              type="number"
-              className="border rounded px-3 py-2 w-24"
-              value={interval}
-              min={1}
-              onChange={e => setInterval(Number(e.target.value))}
-              required
-            />
-            <select
-              className="border rounded px-3 py-2"
-              value={intervalUnit}
-              onChange={e => setIntervalUnit(e.target.value)}
-            >
-              {INTERVAL_UNITS.map(unit => (
-                <option key={unit.value} value={unit.value}>{unit.label}</option>
-              ))}
-            </select>
-          </div>
         </div>
         <button
           type="submit"

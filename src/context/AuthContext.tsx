@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (event === 'SIGNED_IN' && session?.user) {
           console.log('User signed in:', session.user)
         } else if (event === 'SIGNED_OUT') {
-          console.log('User signed out')
+          // User signed out
         }
       }
     )

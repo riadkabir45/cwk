@@ -74,6 +74,13 @@ const Navbar: React.FC = () => {
                         Create Task
                       </Link>
                       <Link
+                        to="/tasks/list"
+                        className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                        onClick={() => setIsTasksOpen(false)}
+                      >
+                        Task List
+                      </Link>
+                      <Link
                         to="/tasks/statuses"
                         className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
                         onClick={() => setIsTasksOpen(false)}
