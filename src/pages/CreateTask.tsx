@@ -17,7 +17,7 @@ const CreateTask: React.FC = () => {
     e.preventDefault();
     const data = {
       taskName: taskName,
-      isNumericalTask: taskType === 'number',
+      numericalTask: taskType === 'number',
     };
 
     try {
