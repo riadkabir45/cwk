@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles }) => {
-  const { user, loading } = useAuth()
+  const { user, loading, session, signOut } = useAuth()
   const location = useLocation()
 
   if (loading) {
@@ -20,9 +20,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
   }
 
   if (!user) {
-    // Redirect to login with the return url
     return <Navigate to="/auth/login" state={{ from: location }} replace />
   }
+
+  // Check if token is expired
+  const token = session?.access_token
+  const expiresAt = session?.expires_at
+  const now = Math.floor(Date.now() / 1000)
+  if (!token || (expiresAt && expiresAt < now)) {
+    signOut && signOut()
+    return <Navigate to="/auth/login" state={{ from: location }} replace />
+  }
+
+  console.log(expiresAt,now);
+  
 
   // Check role-based access if required roles are specified
   if (requiredRoles && requiredRoles.length > 0) {
@@ -32,7 +43,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
     )
 
     if (!hasRequiredRole) {
-      // User doesn't have required role, redirect to home with access denied message
       return <Navigate to="/" replace />
     }
   }
