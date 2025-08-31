@@ -32,9 +32,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
     return <Navigate to="/auth/login" state={{ from: location }} replace />
   }
 
-  console.log(expiresAt,now);
-  
-
   // Check role-based access if required roles are specified
   if (requiredRoles && requiredRoles.length > 0) {
     const userRoles = user.roles || []
