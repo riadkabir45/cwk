@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Tile from '../components/Tile';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../lib/api';
 
 interface Chat {
   id: string;
@@ -20,12 +21,10 @@ const ResumeChatList: React.FC = () => {
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
 
   useEffect(() => {
-    // Fetch all chats for current user
-    fetch(import.meta.env.VITE_SERVER_URI + `/chats/user/${user?.id}`)
-      .then(res => res.json())
-      .then(data => setChats(data || []))
+    api.get(`/chats/user/${user?.id}`)
+      .then(res => setChats(res.data || []))
       .catch(() => setMessage({ text: 'Failed to load chats.', type: 'error' }));
-  }, [user]);
+  }, );
 
   const filteredChats = chats.filter(chat =>
     chat.otherUser.name.toLowerCase().includes(search.toLowerCase()) ||

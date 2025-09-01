@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import Tile from '../components/Tile';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../lib/api';
 
 type Task = {
   id: string;
@@ -33,15 +34,8 @@ const TaskList: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_SERVER_URI + '/tasks',{
-      headers: {
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setTasks(data || []);
-      })
+    api.get('/tasks')
+      .then(res => setTasks(res.data || []))
       .catch(() => setMessage({ text: 'Failed to load tasks.', type: 'error' }));
   }, []);
 
@@ -62,32 +56,18 @@ const TaskList: React.FC = () => {
 
   const handleInstanceSubmit = async (e: React.FormEvent, task: Task) => {
     e.preventDefault();
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_URI}/task-instances`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session?.access_token}`,
-           },
-          body: JSON.stringify({
-            "task": { "id" : task.id },
-            "taskInterval": intervalValue,
-            "taskIntervalType": intervalUnit.toUpperCase(),
-            "userId": getUserId()
-          }),
-        }
-      );
-      if (response.ok) {
-        setMessage({ text: 'Instance created successfully!', type: 'success' });
-        setExpandedTaskId(null);
-      } else {
-        setMessage({ text: 'Failed to create instance.', type: 'error' });
-      }
-    } catch {
-      setMessage({ text: 'Error creating instance.', type: 'error' });
-    }
+    api.post('/task-instances',{
+      task: { id: task.id },
+      taskInterval: intervalValue,
+      taskIntervalType: intervalUnit.toUpperCase(),
+      userId: getUserId()
+    })
+    .then(() => {
+      setMessage({ text: 'Instance created successfully!', type: 'success' });
+    })
+    .catch(() => {
+      setMessage({ text: 'Failed to create instance.', type: 'error' });
+    });
   };
 
   return (

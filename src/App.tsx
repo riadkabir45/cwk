@@ -9,7 +9,7 @@ import Home from './pages/Home'
 import MainLayout from './components/layout/MainLayout'
 import AuthLayout from './components/layout/AuthLayout'
 import CreateTask from './pages/CreateTask';
-import TaskStatuses from './pages/TaskStatuses';
+import TaskStatuses from './pages/TaskStatus';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminPanel from './components/admin/AdminPanel';
 import TaskList from './pages/TaskList';

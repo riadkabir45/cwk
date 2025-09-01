@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Tile from '../components/Tile';
 import { useAuth } from '../context/AuthContext';
 import MessageBox, { type MessageState } from '../components/MessageBox';
+import { api } from '../lib/api';
 
 interface TaskStatus {
   id: string;
@@ -29,15 +30,10 @@ const TaskStatuses: React.FC = () => {
 
   // Move fetch logic to a function
   const loadStatuses = () => {
-    fetch(import.meta.env.VITE_SERVER_URI + `/task-instances/userId/${getUserId()}`, {
-      headers: {
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-    })
-      .then(res => res.json()
-      )
-      .then((data: TaskStatus[]) => {
-        data.forEach(task => {
+    api.get(`/task-instances/userId/${getUserId()}`)
+    .then(res => {
+      const data: TaskStatus[] = res.data || [];
+       data.forEach(task => {
           task.updates = task.updates.map(update => {
             if (task.taskType.toLowerCase() === 'yes/no') {
               return update === "true" ? true : false;
@@ -45,13 +41,10 @@ const TaskStatuses: React.FC = () => {
             return update;
           });
         });
-        
-        setTaskStatuses(data || []);
-      })
-      .catch((err) => {
-        console.error(err);
-        setMessage({ text: 'Failed to load tasks.', type: 'error' });
-      });
+       setTaskStatuses(data);
+    })
+    .catch(() => setMessage({ text: 'Failed to load tasks.', type: 'error' }));
+    
   };
 
   useEffect(() => {

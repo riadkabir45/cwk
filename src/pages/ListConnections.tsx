@@ -24,29 +24,6 @@ interface Connection {
   upDateTime: string;
 }
 
-/*
-[
-    {
-        "id": "ad049705-31f0-4952-aec7-b280e27e396e",
-        "sender": {
-            "id": "14832c9b-2d18-4d4c-b3d7-77f660b66b2e",
-            "email": "riadkabir45@gmail.com",
-            "firstName": "Riad",
-            "lastName": "Kabir",
-            "profilePicture": null
-        },
-        "receiver": {
-            "id": "0ebf5093-eac2-4cee-bf60-037718eb9f66",
-            "email": "aritra.chakraborty@g.bracu.ac.bd",
-            "firstName": "Aritra",
-            "lastName": "Chakraborty",
-            "profilePicture": null
-        },
-        "accepted": false,
-        "upDateTime": "2025-09-01T15:39:52.157791"
-    }
-]
-*/
 
 const ListConnections: React.FC = () => {
   const { user } = useAuth();
@@ -55,7 +32,6 @@ const ListConnections: React.FC = () => {
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
 
   useEffect(() => {
-    // Fetch all connections for current user
     api.get('/connections')
       .then(res => setChats(res.data || []))
       .catch(() => setMessage({ text: 'Failed to load connections.', type: 'error' }));

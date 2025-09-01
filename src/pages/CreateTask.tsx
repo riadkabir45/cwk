@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MessageBox, { type MessageState } from '../components/MessageBox';
-import { useAuth } from '../context/AuthContext';
+import { api } from '../lib/api';
 
 const TASK_TYPES = [
   { value: 'number', label: 'Number' },
@@ -11,7 +11,6 @@ const CreateTask: React.FC = () => {
   const [taskName, setTaskName] = useState('');
   const [taskType, setTaskType] = useState('number');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
-  const { session } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,23 +19,11 @@ const CreateTask: React.FC = () => {
       numericalTask: taskType === 'number',
     };
 
-    try {
-      const response = await fetch(import.meta.env.VITE_SERVER_URI + '/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token}`,
-        },
-        body: JSON.stringify(data),
-      });
-      if (response.ok) {
-        setMessage({ text: 'Task created successfully!', type: 'success' });
-      } else {
-        setMessage({ text: 'Failed to create task.', type: 'error' });
-      }
-    } catch (error) {
-      setMessage({ text: 'Error creating task.', type: 'error' });
-    }
+    api.post('/tasks', data).then(() => {
+      setMessage({ text: 'Task created successfully!', type: 'success' });
+    }).catch(() => {
+      setMessage({ text: 'Failed to create task.', type: 'error' });
+    });
   };
 
   return (
