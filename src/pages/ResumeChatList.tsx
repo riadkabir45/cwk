@@ -43,7 +43,7 @@ const ResumeChatList: React.FC = () => {
     api.get("/connections/accepted")
       .then(res => setChats(res.data || []))
       .catch(() => setMessage({ text: 'Failed to load chats.', type: 'error' }));
-  }, );
+  }, []);
 
   useEffect(() => {
     // map chats to connections, if sender email is not current user, get sender id, else receiver id
