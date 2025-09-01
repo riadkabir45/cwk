@@ -1,39 +1,71 @@
 import React, { useEffect, useState } from 'react';
 import Tile from '../components/Tile';
 import MessageBox, { type MessageState } from '../components/MessageBox';
-import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 interface Chat {
-  id: string;
-  otherUser: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  lastMessage: string;
+    "id": string,
+    "sender": {
+        "id": string,
+        "email": string,
+        "firstName": string,
+        "lastName": string,
+        "profilePicture": null
+    },
+    "receiver": {
+        "id": string,
+        "email": string,
+        "firstName": string,
+        "lastName": string,
+        "profilePicture": null
+    },
+    "accepted": boolean,
+    "upDateTime": string
+}
+
+interface Connection {
+  id: string,
+  email: string
+  firstName: string,
+  lastName: string,
+  updatedAt: string
 }
 
 const ResumeChatList: React.FC = () => {
   const { user } = useAuth();
   const [chats, setChats] = useState<Chat[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
   const [search, setSearch] = useState('');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
 
   useEffect(() => {
-    api.get(`/chats/user/${user?.id}`)
+    api.get("/connections/accepted")
       .then(res => setChats(res.data || []))
       .catch(() => setMessage({ text: 'Failed to load chats.', type: 'error' }));
   }, );
 
-  const filteredChats = chats.filter(chat =>
-    chat.otherUser.name.toLowerCase().includes(search.toLowerCase()) ||
-    chat.otherUser.email.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    // map chats to connections, if sender email is not current user, get sender id, else receiver id
+    const mappedConnections = chats.map(chat => ({
+      id: chat.id,
+      email: chat.receiver.email !== user?.email ? chat.receiver.email : chat.sender.email,
+      firstName: chat.receiver.email !== user?.email ? chat.receiver.firstName : chat.sender.firstName,
+      lastName: chat.receiver.email !== user?.email ? chat.receiver.lastName : chat.sender.lastName,
+      updatedAt: chat.upDateTime
+    }));
+    setConnections(mappedConnections);
+  },[chats])
+
+  const filteredConnections = connections.filter(chat =>
+    chat.firstName.toLowerCase().includes(search.toLowerCase()) ||
+    chat.lastName.toLowerCase().includes(search.toLowerCase()) ||
+    chat.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleResumeChat = (chat: Chat) => {
+  const handleResumeChat = (chat: Connection) => {
     // Implement resume chat logic here (e.g., redirect or open chat)
-    setMessage({ text: `Resumed chat with ${chat.otherUser.name}`, type: 'success' });
+    setMessage({ text: `Resumed chat with ${chat.firstName} ${chat.lastName}`, type: 'success' });
   };
 
   return (
@@ -48,27 +80,27 @@ const ResumeChatList: React.FC = () => {
         onChange={e => setSearch(e.target.value)}
       />
       <div className="grid gap-4">
-        {filteredChats.map(chat => (
+        {filteredConnections.map(chat => (
           <Tile key={chat.id}>
             <div className="flex justify-between items-center">
               <div>
-                <span className="font-medium text-lg">{chat.otherUser.name}</span>
-                <span className="block text-xs text-gray-500">{chat.otherUser.email}</span>
+                <span className="font-medium text-lg">{chat.firstName} {chat.lastName}</span>
+                <span className="block text-xs text-gray-500">{chat.email}</span>
                 <span className="block text-xs text-gray-400 italic mt-1">
-                  Last message: {chat.lastMessage}
+                  Last message: {chat.updatedAt}
                 </span>
               </div>
               <button
                 className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
                 onClick={() => handleResumeChat(chat)}
               >
-                Resume Chat
+                Open
               </button>
             </div>
           </Tile>
         ))}
-        {filteredChats.length === 0 && (
-          <div className="py-3 text-gray-400 text-center">No chats found.</div>
+        {filteredConnections.length === 0 && (
+          <div className="py-3 text-gray-400 text-center">No connections found.</div>
         )}
       </div>
     </div>
