@@ -21,7 +21,7 @@ const ChatList: React.FC = () => {
   useEffect(() => {
     api.get('/users')
       .then(res => {
-        setUsers(res.data.filter((u: User) => u.id !== user?.id));
+        setUsers(res.data.filter((u: User) => u.email !== user?.email));
       })
       .catch(() => setMessage({ text: 'Failed to load users.', type: 'error' }));
   }, [user]);
@@ -75,7 +75,7 @@ const ChatList: React.FC = () => {
                 className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
                 onClick={() => handleStartChat(u)}
               >
-                Start Chat
+                Connect
               </button>
             </div>
           </Tile>
