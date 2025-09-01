@@ -93,7 +93,7 @@ const TaskList: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh]">
       <h2 className="text-xl font-bold mb-4">All Tasks</h2>
-      <MessageBox message={message} />
+      <MessageBox message={message} setMessage={setMessage} />
       <input
         type="text"
         placeholder="Search tasks..."

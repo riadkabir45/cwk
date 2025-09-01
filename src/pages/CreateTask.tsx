@@ -42,7 +42,7 @@ const CreateTask: React.FC = () => {
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh] flex flex-col justify-center">
       <h2 className="text-xl font-bold mb-4">Create Task</h2>
-      <MessageBox message={message} />
+      <MessageBox message={message} setMessage={setMessage} />
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-medium mb-1">Task Name</label>
