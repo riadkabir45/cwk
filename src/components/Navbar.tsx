@@ -111,6 +111,13 @@ const Navbar: React.FC = () => {
                         Find Chat
                       </Link>
                       <Link
+                        to="/chat/connections"
+                        className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                        onClick={() => setIsChatsOpen(false)}
+                      >
+                        Incoming Connections
+                      </Link>
+                      <Link
                         to="/chat/list"
                         className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
                         onClick={() => setIsChatsOpen(false)}

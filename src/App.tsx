@@ -61,6 +61,11 @@ function App() {
             <ChatList />
           </ProtectedRoute>
         } />
+        <Route path="/chat/connections" element={
+          <ProtectedRoute>
+            <ChatList />
+          </ProtectedRoute>
+        } />
         <Route path="/chat/list" element={
           <ProtectedRoute>
             <ResumeChatList />
