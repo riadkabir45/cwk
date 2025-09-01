@@ -36,7 +36,19 @@ const ChatList: React.FC = () => {
   };
 
   const handleStartChat = (otherUser: User) => {
-    setMessage({ text: `Started chat with ${otherUser.firstName} ${otherUser.lastName}`, type: 'success' });
+    api.get(`/connections/${otherUser.email}`)
+      .then((res) => {
+        // check if first part of msg is Warn:
+
+        if (!res.data.startsWith('Warn:')) {
+          setMessage({ text: `Sent connection request to ${otherUser.firstName} ${otherUser.lastName}`, type: 'success' });
+        }else{
+          setMessage({ text: res.data.replace('Warn:', '').trim(), type: 'warn' });
+        }
+      })
+      .catch(() => {
+        setMessage({ text: 'Failed to send connection.', type: 'error' });
+      });
   };
 
   return (
