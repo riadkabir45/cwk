@@ -12,16 +12,25 @@ interface User {
   profilePicture: string | null;
 }
 
+
+
 const ChatList: React.FC = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState('');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
+  const [connectedUsers, setConnectedUsers] = useState<User[]>([]);
 
   useEffect(() => {
+    api.get('/connections/connected')
+    .then(res => {
+      setConnectedUsers(res.data || []);
+    })
+    .catch(() => setMessage({ text: 'Failed to load connections.', type: 'error' }));
+
     api.get('/users')
       .then(res => {
-        setUsers(res.data.filter((u: User) => u.email !== user?.email));
+        setUsers(res.data.filter((u: User) => u.email !== user?.email && !connectedUsers.some(cu => cu.email === u.email)));
       })
       .catch(() => setMessage({ text: 'Failed to load users.', type: 'error' }));
   }, [user]);
