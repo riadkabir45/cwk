@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTasksOpen, setIsTasksOpen] = useState(false);
+  const [isChatsOpen, setIsChatsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { toggleSidebar } = useSidebar();
   const { user, signOut, loading } = useAuth();
@@ -15,6 +16,7 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   const toggleTasks = () => setIsTasksOpen(!isTasksOpen);
+  const toggleChats = () => setIsChatsOpen(!isChatsOpen);
   const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
 
   const handleSignOut = async () => {
@@ -53,7 +55,6 @@ const Navbar: React.FC = () => {
                 >
                   Dashboard
                 </Link>
-                {/* Tasks Dropdown */}
                 <div className="relative">
                   <button
                     onClick={toggleTasks}
@@ -86,6 +87,35 @@ const Navbar: React.FC = () => {
                         onClick={() => setIsTasksOpen(false)}
                       >
                         Task Statuses
+                      </Link>
+                    </div>
+                  )}
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={toggleChats}
+                    className="px-3 py-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-gray-50 focus:outline-none"
+                  >
+                    Chats
+                    <svg className="inline ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isChatsOpen && (
+                    <div className="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg z-50">
+                      <Link
+                        to="/chat/find"
+                        className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                        onClick={() => setIsChatsOpen(false)}
+                      >
+                        Find Chat
+                      </Link>
+                      <Link
+                        to="/chat/list"
+                        className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                        onClick={() => setIsChatsOpen(false)}
+                      >
+                        Chat List
                       </Link>
                     </div>
                   )}

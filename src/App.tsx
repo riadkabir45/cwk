@@ -13,6 +13,8 @@ import TaskStatuses from './pages/TaskStatuses';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminPanel from './components/admin/AdminPanel';
 import TaskList from './pages/TaskList';
+import ChatList from './pages/ChatList'
+import ResumeChatList from './pages/ResumeChatList'
 
 function App() {
   return (
@@ -52,6 +54,16 @@ function App() {
         <Route path="/tasks/list" element={
           <ProtectedRoute>
             <TaskList />
+          </ProtectedRoute>
+        } />
+        <Route path="/chat/find" element={
+          <ProtectedRoute>
+            <ChatList />
+          </ProtectedRoute>
+        } />
+        <Route path="/chat/list" element={
+          <ProtectedRoute>
+            <ResumeChatList />
           </ProtectedRoute>
         } />
       </Route>
