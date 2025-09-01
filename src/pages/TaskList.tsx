@@ -24,7 +24,7 @@ const TaskList: React.FC = () => {
   const [intervalValue, setIntervalValue] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState('days');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
-  const { user, session } = useAuth();
+  const { user } = useAuth();
 
   const getUserId = () => {
     if (user?.id) {
