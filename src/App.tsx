@@ -15,6 +15,7 @@ import AdminPanel from './components/admin/AdminPanel';
 import TaskList from './pages/TaskList';
 import ChatList from './pages/ChatList'
 import ResumeChatList from './pages/ResumeChatList'
+import ListConnections from './pages/ListConnections'
 
 function App() {
   return (
@@ -63,7 +64,7 @@ function App() {
         } />
         <Route path="/chat/connections" element={
           <ProtectedRoute>
-            <ChatList />
+            <ListConnections />
           </ProtectedRoute>
         } />
         <Route path="/chat/list" element={
