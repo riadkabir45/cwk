@@ -118,7 +118,7 @@ const fetchMessages = () => {
             >
               <div>{msg.content}</div>
               <div className="flex justify-between items-center mt-1">
-                <div className="text-[10px] text-gray-200 text-right">
+                <div className={`text-[10px] ${msg.senderEmail === user?.email ? "text-gray-200" : "text-gray-400"} text-right`}>
                   {new Date(msg.createdAt).toLocaleTimeString()}
                 </div>
                 <div className="text-[10px] ml-2 text-gray-400 italic">
