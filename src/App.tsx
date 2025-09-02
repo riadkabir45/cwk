@@ -17,6 +17,7 @@ import ChatList from './pages/ChatList'
 import ResumeChatList from './pages/ResumeChatList'
 import ListConnections from './pages/ListConnections'
 import ChatPage from './pages/Chating'
+import NotificationPage from './pages/NotificationPage'
 
 function App() {
   return (
@@ -73,6 +74,11 @@ function App() {
             <ChatPage />
           </ProtectedRoute>
         } />
+        <Route path="/notifications" element={
+          <ProtectedRoute>
+            <NotificationPage />
+          </ProtectedRoute>
+        } />
         <Route path="/:namespace" element={
           <ProtectedRoute>
             <VarIntro />
@@ -80,7 +86,7 @@ function App() {
         } />
       </Route>
       
-      {/* Public auth layout without sidebar */}
+      {/* Public auth layout without sidebar /notifications */}
       <Route element={<AuthLayout />}>
         <Route path="/auth/test" element={<TestAuth />} />
         <Route path="/auth/signup" element={<SignUp />} />

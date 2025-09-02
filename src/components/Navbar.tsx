@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../lib/api';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTasksOpen, setIsTasksOpen] = useState(false);
   const [isChatsOpen, setIsChatsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const { toggleSidebar } = useSidebar();
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      api.get(`/notifications/count`)
+        .then(res => {
+          setNotificationCount(res.data || 0);
+        })
+        .catch(() => setNotificationCount(0));
+    }
+  }, [user]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -46,7 +58,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-4">
-            <button onClick={() => toggleSidebar()} className="text-lg font-bold text-indigo-600">CWK</button>
+            <button onClick={() => toggleSidebar()} className="text-lg font-bold text-indigo-600">CWK </button>
             {user && (
               <>
                 <Link
@@ -134,12 +146,26 @@ const Navbar: React.FC = () => {
             {loading ? (
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
             ) : user ? (
-              <div className="relative">
+              <div className="relative flex items-center space-x-4">
+                {/* Notification button */}
+                <button
+                  className="relative focus:outline-none"
+                  onClick={() => navigate('/notifications')}
+                  aria-label="Notifications"
+                >
+                  <i className="nf nf-fa-bell text-xl text-gray-600" />
+                  {notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 font-bold">
+                      {notificationCount}
+                    </span>
+                  )}
+                </button>
+                {/* User menu button */}
                 <button
                   onClick={toggleUserMenu}
                   className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
                 >
-                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold">
+                  <div className="relative w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold">
                     {getUserInitials()}
                   </div>
                   <span className="text-sm font-medium">{getUserDisplayName()}</span>
