@@ -113,8 +113,13 @@ const ChatPage: React.FC = () => {
               }`}
             >
               <div>{msg.content}</div>
-              <div className="text-[10px] text-gray-400 mt-1 text-right">
-                {new Date(msg.createdAt).toLocaleTimeString()}
+              <div className="flex justify-between items-center mt-1">
+                <div className="text-[10px] text-gray-200 text-right">
+                  {new Date(msg.createdAt).toLocaleTimeString()}
+                </div>
+                <div className="text-[10px] ml-2 text-gray-400 italic">
+                  {msg.seen ? <i className='nf nf-fa-ok_sign' /> : <i className='nf nf-md-clock' />}
+                </div>
               </div>
             </div>
           </div>
