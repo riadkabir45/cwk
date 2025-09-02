@@ -30,6 +30,7 @@ const ListConnections: React.FC = () => {
   const [chats, setChats] = useState<Connection[]>([]);
   const [search, setSearch] = useState('');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
+  const [acceptedChats, setAcceptedChats] = useState<Connection[]>([]);
 
   useEffect(() => {
     api.get('/connections')
@@ -48,7 +49,10 @@ const ListConnections: React.FC = () => {
 
   const handleResumeChat = (chat: Connection) => {
     api.post('/connections', { id: chat.id })
-      .then(() => setMessage({ text: `Accepted connection with ${chat.receiver.firstName}`, type: 'success' }))
+      .then(() => {
+        setMessage({ text: `Accepted connection with ${chat.receiver.firstName}`, type: 'success' });
+        setAcceptedChats(prev => [...prev, chat]);
+      })
       .catch(() => setMessage({ text: 'Failed to accept connection.', type: 'error' }));
   };
 
@@ -64,7 +68,7 @@ const ListConnections: React.FC = () => {
         onChange={e => setSearch(e.target.value)}
       />
       <div className="grid gap-4">
-        {filteredChats.map(chat => (
+        {filteredChats.filter(chat => !acceptedChats.some(ac => ac.id === chat.id)).map(chat => (
           <Tile key={chat.id}>
             <div className="flex justify-between items-center">
               <div>

@@ -30,7 +30,7 @@ const ChatList: React.FC = () => {
 
     api.get('/users')
       .then(res => {
-        setUsers(res.data.filter((u: User) => u.email !== user?.email && !connectedUsers.some(cu => cu.email === u.email)));
+        setUsers(res.data.filter((u: User) => u.email !== user?.email));
       })
       .catch(() => setMessage({ text: 'Failed to load users.', type: 'error' }));
   }, [user]);
@@ -51,6 +51,7 @@ const ChatList: React.FC = () => {
 
         if (!res.data.startsWith('Warn:')) {
           setMessage({ text: `Sent connection request to ${otherUser.firstName} ${otherUser.lastName}`, type: 'success' });
+          setConnectedUsers(prev => [...prev, otherUser]);
         }else{
           setMessage({ text: res.data.replace('Warn:', '').trim(), type: 'warn' });
         }
@@ -72,7 +73,7 @@ const ChatList: React.FC = () => {
         onChange={e => setSearch(e.target.value)}
       />
       <div className="grid gap-4">
-        {filteredUsers.map(u => (
+        {filteredUsers.filter(u => !connectedUsers.some(cu => cu.email === u.email)).map(u => (
           <Tile key={u.id}>
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
