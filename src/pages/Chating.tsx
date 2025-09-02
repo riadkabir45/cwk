@@ -13,6 +13,25 @@ interface Message {
   createdAt: string;
 }
 
+interface Connection {
+    "id": string,
+    "sender": {
+        "id": string,
+        "email": string,
+        "firstName": string,
+        "lastName": string,
+        "profilePicture": null
+    },
+    "receiver": {
+        "id": string,
+        "email": string,
+        "firstName": string,
+        "lastName": string,
+        "profilePicture": null
+    },
+    "accepted": true,
+    "upDateTime": string
+}
 
 const ChatPage: React.FC = () => {
 
@@ -28,8 +47,8 @@ const ChatPage: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [otherUser, setOtherUser] = useState<{ email: string } | null>(null);
 
-  const otherUser = user;
   const refreshRate = 5;
   let isMounted = true;
 
@@ -37,9 +56,31 @@ const fetchMessages = () => {
   api.get(`/messages/${chatId}`)
     .then(res => {
       if (isMounted) setMessages(res.data || []);
+      for (const msg of res.data) {
+        if (msg.senderEmail !== user?.email && otherUser?.email !== msg.senderEmail) {
+          setOtherUser({ email: msg.senderEmail });
+        }
+      }
     })
     .catch(() => {
       if (isMounted) setMessage({ text: 'Failed to load messages.', type: 'error' });
+    });
+
+  api.get(`/connections/status/${chatId}`)
+    .then(res => {
+      const data: Connection = res.data;
+      if (isMounted) {
+        if (data.sender.id === user?.id) {
+          setOtherUser({ email: data.receiver.email });
+        } else {
+          setOtherUser({ email: data.sender.email });
+        }
+      }
+      console.log(res.data);
+      
+    })
+    .catch(() => {
+      if (isMounted) setMessage({ text: 'Failed to load connections.', type: 'error' });
     });
 };
 
@@ -93,7 +134,7 @@ const fetchMessages = () => {
   return (
     <div className="max-w-2xl mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh] flex flex-col">
       <h2 className="text-xl font-bold mb-4">
-        Chat with {otherUser?.firstName} {otherUser?.lastName}
+        Chat with {otherUser?.email || 'Loading...'}
       </h2>
       <MessageBox message={message} setMessage={setMessage} />
       <div
