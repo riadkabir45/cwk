@@ -30,22 +30,25 @@ const ChatPage: React.FC = () => {
   const [autoScroll, setAutoScroll] = useState(true);
 
   const otherUser = user;
+  const refreshRate = 5;
+  let isMounted = true;
+
+const fetchMessages = () => {
+  api.get(`/messages/${chatId}`)
+    .then(res => {
+      if (isMounted) setMessages(res.data || []);
+    })
+    .catch(() => {
+      if (isMounted) setMessage({ text: 'Failed to load messages.', type: 'error' });
+    });
+};
 
   // Fetch messages initially and then every 1s
   useEffect(() => {
-    let isMounted = true;
-    const fetchMessages = () => {
-      api.get(`/messages/${chatId}`)
-        .then(res => {
-          if (isMounted) setMessages(res.data || []);
-        })
-        .catch(() => {
-          if (isMounted) setMessage({ text: 'Failed to load messages.', type: 'error' });
-        });
-    };
+    isMounted = true;
 
     fetchMessages(); // initial fetch
-    const interval = setInterval(fetchMessages, 1000);
+    const interval = setInterval(fetchMessages, refreshRate * 1000);
 
     return () => {
       isMounted = false;
@@ -75,6 +78,7 @@ const ChatPage: React.FC = () => {
       .then(res => {
         setMessages(prev => [...prev, res.data]);
         setInput('');
+        fetchMessages();
       })
       .catch(err => {
         const msg =
