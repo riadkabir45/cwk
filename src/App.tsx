@@ -16,6 +16,7 @@ import TaskList from './pages/TaskList';
 import ChatList from './pages/ChatList'
 import ResumeChatList from './pages/ResumeChatList'
 import ListConnections from './pages/ListConnections'
+import ChatPage from './pages/Chating'
 
 function App() {
   return (
@@ -33,11 +34,6 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/variables" element={
-          <ProtectedRoute>
-            <VarIntro />
-          </ProtectedRoute>
-        } />
-        <Route path="/:namespace" element={
           <ProtectedRoute>
             <VarIntro />
           </ProtectedRoute>
@@ -70,6 +66,16 @@ function App() {
         <Route path="/chat/list" element={
           <ProtectedRoute>
             <ResumeChatList />
+          </ProtectedRoute>
+        } />
+        <Route path="/chat/:id" element={
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/:namespace" element={
+          <ProtectedRoute>
+            <VarIntro />
           </ProtectedRoute>
         } />
       </Route>

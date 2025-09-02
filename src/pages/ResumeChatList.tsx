@@ -3,6 +3,7 @@ import Tile from '../components/Tile';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Chat {
     "id": string,
@@ -38,6 +39,7 @@ const ResumeChatList: React.FC = () => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [search, setSearch] = useState('');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get("/connections/accepted")
@@ -64,8 +66,8 @@ const ResumeChatList: React.FC = () => {
   );
 
   const handleResumeChat = (chat: Connection) => {
-    // Implement resume chat logic here (e.g., redirect or open chat)
-    setMessage({ text: `Resumed chat with ${chat.firstName} ${chat.lastName}`, type: 'success' });
+    // redirect to "/chat/:id" using react navigation
+    navigate(`/chat/${chat.id}`);
   };
 
   return (
