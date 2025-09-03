@@ -18,6 +18,7 @@ import ResumeChatList from './pages/ResumeChatList'
 import ListConnections from './pages/ListConnections'
 import ChatPage from './pages/Chating'
 import NotificationPage from './pages/NotificationPage'
+import LeaderBoard from './pages/LeaderBoard'
 
 function App() {
   return (
@@ -77,6 +78,11 @@ function App() {
         <Route path="/notifications" element={
           <ProtectedRoute>
             <NotificationPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/leaderBoard/:instanceId" element={
+          <ProtectedRoute>
+            <LeaderBoard />
           </ProtectedRoute>
         } />
         <Route path="/:namespace" element={

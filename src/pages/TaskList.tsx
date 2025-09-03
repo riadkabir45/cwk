@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import Tile from '../components/Tile';
-import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
 
 type Task = {
@@ -24,14 +23,7 @@ const TaskList: React.FC = () => {
   const [intervalValue, setIntervalValue] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState('days');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
-  const { user } = useAuth();
 
-  const getUserId = () => {
-    if (user?.id) {
-      return `${user.id}`;
-    }
-    return user?.email || 'user69';
-  };
 
   useEffect(() => {
     api.get('/tasks')
@@ -56,11 +48,12 @@ const TaskList: React.FC = () => {
 
   const handleInstanceSubmit = async (e: React.FormEvent, task: Task) => {
     e.preventDefault();
+    
     api.post('/task-instances',{
-      task: { id: task.id },
+      task: task.id,
+      isNumerical: task.type === 'number',
       taskInterval: intervalValue,
       taskIntervalType: intervalUnit.toUpperCase(),
-      userId: getUserId()
     })
     .then(() => {
       setMessage({ text: 'Instance created successfully!', type: 'success' });

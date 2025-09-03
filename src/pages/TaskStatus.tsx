@@ -6,14 +6,16 @@ import { api } from '../lib/api';
 
 interface TaskStatus {
   id: string;
-  name: string;
-  taskType: string;
-  interval: number;
+  task: string;
+  numerical: boolean;
+  taskInterval: number;
+  taskIntervalType: string;
+  userId: string;
+  taskUpdates: (string | boolean)[];
   taskStreak: number;
-  intervalType: string;
-  lastUpdated: string | null;
-  updates: (number | boolean | string)[];
+  lastUpdated: Date | null;
 }
+
 
 const TaskStatuses: React.FC = () => {
   const { user, session } = useAuth();
@@ -35,8 +37,8 @@ const TaskStatuses: React.FC = () => {
     .then(res => {
       const data: TaskStatus[] = res.data || [];
        data.forEach(task => {
-          task.updates = task.updates.map(update => {
-            if (task.taskType.toLowerCase() === 'yes/no') {
+          task.taskUpdates = task.taskUpdates.map(update => {
+            if (task.taskIntervalType.toLowerCase() === 'yes/no') {
               return update === "true" ? true : false;
             }
             return update;
@@ -65,7 +67,7 @@ const TaskStatuses: React.FC = () => {
     e.preventDefault();
 
     // Validation
-    if (task.taskType.toLowerCase() === 'yes/no') {
+    if (!task.numerical) {
       const val = inputValue.trim().toLowerCase();
       if (val !== 'yes' && val !== 'no') {
         setMessage({ text: 'Please enter "Yes" or "No".', type: 'error' });
@@ -90,7 +92,7 @@ const TaskStatuses: React.FC = () => {
           },
           body: JSON.stringify({
             "updateDescription":
-              task.taskType.toLowerCase() === 'yes/no'
+              !task.numerical
                 ? inputValue.trim().toLowerCase() === 'yes'
                 : Number(inputValue),
             "taskInstances": { "id": task.id },
@@ -123,35 +125,35 @@ const TaskStatuses: React.FC = () => {
           >
             <div className="flex justify-between items-center mb-2 cursor-pointer">
               <div>
-                <span className="font-semibold">{task.name}</span>
+                <span className="font-semibold">{task.task}</span>
                 <span className="ml-2 text-xs text-gray-500">
-                  ({task.taskType})
+                  ({task.numerical ? 'Numerical' : 'Yes/No'})
                 </span>
               </div>
               <span className="text-xs text-gray-400">
-                Every {task.interval} {task.intervalType[0].toUpperCase() + task.intervalType.slice(1).toLowerCase()}
+                Every {task.taskInterval} {task.taskIntervalType[0].toUpperCase() + task.taskIntervalType.slice(1).toLowerCase()}
               </span>
             </div>
             <div className='flex justify-between'>
               <div>
                 <span className="font-medium text-sm">Recent Statuses:</span>
                 <div className="flex gap-2 mt-2">
-                  {task.updates.length > 0 ? task.updates.slice(-5).map((status, idx) => (
+                  {task.taskUpdates.length > 0 ? task.taskUpdates.slice(-5).map((status, idx) => (
                     <span
                       key={idx}
                       className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        task.taskType.toLowerCase() === 'yes/no'
-                          ? status
+                        !task.numerical
+                          ? status == 'true'
                             ? 'bg-green-100 text-green-700'
                             : 'bg-red-100 text-red-700'
                           : 'bg-blue-100 text-blue-700'
                       }`}
                     >
-                      {task.taskType.toLowerCase() === 'yes/no'
-                        ? (status
+                      {!task.numerical
+                        ? (status == 'true'
                           ? 'Yes'
                           : 'No')
-                        : status}
+                        : Number(status)}
                     </span>
                   )) : <span className="text-gray-500 italic">No statuses yet</span>}
                 </div>
@@ -173,7 +175,7 @@ const TaskStatuses: React.FC = () => {
               >
                 <div>
                   <label className="block font-medium mb-1">
-                    {task.taskType.toLowerCase() === 'yes/no'
+                    {!task.numerical
                       ? 'Update Status (Yes/No)'
                       : 'Update Status (Number)'}
                   </label>
@@ -182,7 +184,7 @@ const TaskStatuses: React.FC = () => {
                     className="w-full border rounded px-3 py-2"
                     value={inputValue}
                     onChange={e => setInputValue(e.target.value)}
-                    placeholder={task.taskType.toLowerCase() === 'yes/no' ? 'Yes or No' : 'Enter a number'}
+                    placeholder={!task.numerical ? 'Yes or No' : 'Enter a number'}
                   />
                 </div>
                 <button
