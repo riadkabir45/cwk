@@ -9,6 +9,7 @@ interface TaskStatus {
   name: string;
   taskType: string;
   interval: number;
+  taskStreak: number;
   intervalType: string;
   lastUpdated: string | null;
   updates: (number | boolean | string)[];
@@ -42,6 +43,8 @@ const TaskStatuses: React.FC = () => {
           });
         });
        setTaskStatuses(data);
+       console.log(data);
+       
     })
     .catch(() => setMessage({ text: 'Failed to load tasks.', type: 'error' }));
     
@@ -129,28 +132,31 @@ const TaskStatuses: React.FC = () => {
                 Every {task.interval} {task.intervalType[0].toUpperCase() + task.intervalType.slice(1).toLowerCase()}
               </span>
             </div>
-            <div>
-              <span className="font-medium text-sm">Recent Statuses:</span>
-              <div className="flex gap-2 mt-2">
-                {task.updates.length > 0 ? task.updates.slice(-5).map((status, idx) => (
-                  <span
-                    key={idx}
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      task.taskType.toLowerCase() === 'yes/no'
-                        ? status
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
-                        : 'bg-blue-100 text-blue-700'
-                    }`}
-                  >
-                    {task.taskType.toLowerCase() === 'yes/no'
-                      ? (status
-                        ? 'Yes'
-                        : 'No')
-                      : status}
-                  </span>
-                )) : <span className="text-gray-500 italic">No statuses yet</span>}
+            <div className='flex justify-between'>
+              <div>
+                <span className="font-medium text-sm">Recent Statuses:</span>
+                <div className="flex gap-2 mt-2">
+                  {task.updates.length > 0 ? task.updates.slice(-5).map((status, idx) => (
+                    <span
+                      key={idx}
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        task.taskType.toLowerCase() === 'yes/no'
+                          ? status
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700'
+                          : 'bg-blue-100 text-blue-700'
+                      }`}
+                    >
+                      {task.taskType.toLowerCase() === 'yes/no'
+                        ? (status
+                          ? 'Yes'
+                          : 'No')
+                        : status}
+                    </span>
+                  )) : <span className="text-gray-500 italic">No statuses yet</span>}
+                </div>
               </div>
+              <div><i className={'relative nf nf-md-fire_circle text-5xl' + (task.taskStreak < 1 ? ' text-slate-500' : ' text-red-500')} ><span className='absolute right-0 text-[10px] bg-slate-900 rounded p-1 text-slate-50'>{task.taskStreak}</span></i></div>
             </div>
             {task.lastUpdated && (
               <div className="flex justify-end mt-4">
