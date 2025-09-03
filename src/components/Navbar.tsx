@@ -146,61 +146,65 @@ const Navbar: React.FC = () => {
             {loading ? (
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
             ) : user ? (
-              <div className="relative flex items-center space-x-4">
+              <div className="flex items-center space-x-4">
                 {/* Notification button */}
-                <button
-                  className="relative focus:outline-none"
-                  onClick={() => navigate('/notifications')}
-                  aria-label="Notifications"
-                >
-                  <i className="nf nf-fa-bell text-xl text-gray-600" />
-                  {notificationCount > 0 && (
-                    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 font-bold">
-                      {notificationCount}
-                    </span>
-                  )}
-                </button>
-                {/* User menu button */}
-                <button
-                  onClick={toggleUserMenu}
-                  className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
-                >
-                  <div className="relative w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold">
-                    {getUserInitials()}
-                  </div>
-                  <span className="text-sm font-medium">{getUserDisplayName()}</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-50">
-                    <div className="px-4 py-2 border-b border-gray-200">
-                      <p className="text-sm font-medium text-gray-900">{getUserDisplayName()}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
+                <div className="relative">
+                  <button
+                    className="relative focus:outline-none"
+                    onClick={() => navigate('/notifications')}
+                    aria-label="Notifications"
+                  >
+                    <i className="nf nf-fa-bell text-xl text-gray-600" />
+                    {notificationCount > 0 && (
+                      <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 font-bold">
+                        {notificationCount}
+                      </span>
+                    )}
+                  </button>
+                </div>
+                {/* User menu button and dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={toggleUserMenu}
+                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
+                  >
+                    <div className="relative w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold">
+                      {getUserInitials()}
                     </div>
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      to="/settings"
-                      className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Settings
-                    </Link>
-                    <button
-                      onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600"
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                )}
+                    <span className="text-sm font-medium">{getUserDisplayName()}</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 mt-2 min-w-[12rem] bg-white border rounded shadow-lg z-50">
+                      <div className="px-4 py-2 border-b border-gray-200">
+                        <p className="text-sm font-medium text-gray-900">{getUserDisplayName()}</p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                      </div>
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        to="/settings"
+                        className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Settings
+                      </Link>
+                      <button
+                        onClick={handleSignOut}
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="space-x-2">
