@@ -22,16 +22,16 @@ const TaskStatuses: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
 
-  const getUserId = () => {
-    if (user?.id) {
-      return `${user.id}`;
+  const getUserEmail = () => {
+    if (user?.email) {
+      return `${user.email}`;
     }
-    return user?.email || 'User45';
+    return user?.email || 'user45@gmail.com';
   };
 
   // Move fetch logic to a function
   const loadStatuses = () => {
-    api.get(`/task-instances/userId/${getUserId()}`)
+    api.get(`/task-instances/userEmail/${getUserEmail()}`)
     .then(res => {
       const data: TaskStatus[] = res.data || [];
        data.forEach(task => {
