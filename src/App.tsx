@@ -19,6 +19,7 @@ import ListConnections from './pages/ListConnections'
 import ChatPage from './pages/Chating'
 import NotificationPage from './pages/NotificationPage'
 import LeaderBoard from './pages/LeaderBoard'
+import UserRankings from './pages/UserRankings'
 
 function App() {
   return (
@@ -78,6 +79,11 @@ function App() {
         <Route path="/notifications" element={
           <ProtectedRoute>
             <NotificationPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/leaderBoard" element={
+          <ProtectedRoute>
+            <UserRankings />
           </ProtectedRoute>
         } />
         <Route path="/leaderBoard/:instanceId" element={

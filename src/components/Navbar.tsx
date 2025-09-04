@@ -139,6 +139,12 @@ const Navbar: React.FC = () => {
                     </div>
                   )}
                 </div>
+                <button
+                  onClick={() => navigate('/leaderboard')}
+                  className="px-3 py-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-gray-50 focus:outline-none"
+                >
+                  User Rankings
+                </button>
               </>
             )}
           </div>
