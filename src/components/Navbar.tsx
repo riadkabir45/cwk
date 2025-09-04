@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
+import ProtectedComponent from './ProtectedComponent';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -145,6 +146,14 @@ const Navbar: React.FC = () => {
                 >
                   User Rankings
                 </button>
+                <ProtectedComponent requiredRoles={['ADMIN', 'MODERATOR']}>
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className="px-3 py-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-gray-50 focus:outline-none"
+                  >
+                    Admin Panel
+                  </button>
+                </ProtectedComponent>
               </>
             )}
           </div>
