@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import Tile from '../Tile';
 import MessageBox, { type MessageState } from '../MessageBox';
+import YesNoModal from '../YesNoModal';
 
 interface User {
   id: string;
@@ -29,12 +30,20 @@ const badgeColors: Record<string, string> = {
   DEFAULT: 'bg-gray-50 text-gray-700',
 };
 
+type ModalAction =
+  | { type: 'promoteMentor'; user: User }
+  | { type: 'demoteMentor'; user: User }
+  | { type: 'assignModerator'; user: User }
+  | { type: 'removeModerator'; user: User }
+  | null;
+
 const AdminPanel: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
   const [search, setSearch] = useState('');
+  const [modalAction, setModalAction] = useState<ModalAction>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -53,33 +62,39 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const promoteToMentor = async (userId: string) => {
+  const handleModalYes = async () => {
+    if (!modalAction) return;
+    const { user } = modalAction;
     try {
-      const response = await api.post('/api/admin/promote-mentor', { userId });
+      let response;
+      switch (modalAction.type) {
+        case 'promoteMentor':
+          response = await api.post('/api/admin/promote-mentor', { userId: user.id });
+          setMessage({ text: response.data.message, type: 'success' });
+          break;
+        case 'demoteMentor':
+          response = await api.post('/api/admin/demote-mentor', { userId: user.id });
+          setMessage({ text: response.data.message, type: 'success' });
+          break;
+        case 'assignModerator':
+          response = await api.post('/api/admin/assign-moderator', { userId: user.id });
+          setMessage({ text: response.data.message, type: 'success' });
+          break;
+        case 'removeModerator':
+          response = await api.delete('/api/admin/remove-moderator', { userId: user.id });
+          setMessage({ text: response.data.message, type: 'success' });
+          break;
+      }
       fetchUsers();
-      setMessage({ text: response.data.message, type: 'success' });
     } catch (err: any) {
-      setMessage({ text: err.response?.data?.error || 'Failed to promote user', type: 'error' });
-    }
-  };
-
-  const assignModerator = async (userId: string) => {
-    try {
-      const response = await api.post('/api/admin/assign-moderator', { userId });
-      fetchUsers();
-      setMessage({ text: response.data.message, type: 'success' });
-    } catch (err: any) {
-      setMessage({ text: err.response?.data?.error || 'Failed to assign moderator', type: 'error' });
-    }
-  };
-
-  const removeModerator = async (userId: string) => {
-    try {
-      const response = await api.delete('/api/admin/remove-moderator', { userId });
-      fetchUsers();
-      setMessage({ text: response.data.message, type: 'success' });
-    } catch (err: any) {
-      setMessage({ text: err.response?.data?.error || 'Failed to remove moderator', type: 'error' });
+      setMessage({
+        text:
+          err.response?.data?.error ||
+          'Failed to perform action',
+        type: 'error',
+      });
+    } finally {
+      setModalAction(null);
     }
   };
 
@@ -139,15 +154,23 @@ const AdminPanel: React.FC = () => {
             <div className="flex flex-col gap-2 mt-4 md:mt-0">
               {!user.roles.includes('MENTOR') && (
                 <button
-                  onClick={() => promoteToMentor(user.id)}
+                  onClick={() => setModalAction({ type: 'promoteMentor', user })}
                   className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 font-semibold shadow"
                 >
                   Promote to Mentor
                 </button>
               )}
+              {user.roles.includes('MENTOR') && (
+                <button
+                  onClick={() => setModalAction({ type: 'demoteMentor', user })}
+                  className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 font-semibold shadow"
+                >
+                  Demote from Mentor
+                </button>
+              )}
               {!user.roles.includes('MODERATOR') && user.primaryRole !== 'ADMIN' && (
                 <button
-                  onClick={() => assignModerator(user.id)}
+                  onClick={() => setModalAction({ type: 'assignModerator', user })}
                   className="px-3 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 font-semibold shadow"
                 >
                   Make Moderator
@@ -155,7 +178,7 @@ const AdminPanel: React.FC = () => {
               )}
               {user.roles.includes('MODERATOR') && user.primaryRole !== 'ADMIN' && (
                 <button
-                  onClick={() => removeModerator(user.id)}
+                  onClick={() => setModalAction({ type: 'removeModerator', user })}
                   className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 font-semibold shadow"
                 >
                   Remove Moderator
@@ -170,6 +193,36 @@ const AdminPanel: React.FC = () => {
           </div>
         )}
       </div>
+      <YesNoModal
+        open={!!modalAction}
+        message={
+          modalAction
+            ? (() => {
+                switch (modalAction.type) {
+                  case 'promoteMentor':
+                    return `Are you sure you want to promote ${modalAction.user.email} to Mentor?`;
+                  case 'demoteMentor':
+                    return `Are you sure you want to demote ${modalAction.user.email} from Mentor?`;
+                  case 'assignModerator':
+                    return `Are you sure you want to make ${modalAction.user.email} a Moderator?`;
+                  case 'removeModerator':
+                    return `Are you sure you want to remove Moderator role from ${modalAction.user.email}?`;
+                  default:
+                    return '';
+                }
+              })()
+            : ''
+        }
+        onYes={handleModalYes}
+        onNo={() => setModalAction(null)}
+        color={
+          modalAction?.type === 'removeModerator'
+            ? 'red'
+            : modalAction?.type === 'assignModerator'
+            ? 'yellow'
+            : 'indigo'
+        }
+      />
     </div>
   );
 };
