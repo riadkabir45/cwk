@@ -3,6 +3,7 @@ import Tile from '../components/Tile';
 import { useAuth } from '../context/AuthContext';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import { api } from '../lib/api';
+import TaskFeedback from '../components/TaskFeedback';
 
 interface TaskStatus {
   id: string;
@@ -14,6 +15,11 @@ interface TaskStatus {
   taskUpdates: (string | boolean)[];
   taskStreak: number;
   lastUpdated: Date | null;
+  // Feedback system fields
+  commentsCount?: number;
+  likeCount?: number;
+  dislikeCount?: number;
+  userReaction?: string | null;
 }
 
 
@@ -23,6 +29,7 @@ const TaskStatuses: React.FC = () => {
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
+  const [feedbackModal, setFeedbackModal] = useState<{ taskInstanceId: string } | null>(null);
 
   const getUserEmail = () => {
     if (user?.email) {
@@ -160,13 +167,36 @@ const TaskStatuses: React.FC = () => {
               </div>
               <div><i className={'relative nf nf-md-fire_circle text-5xl' + (task.taskStreak < 1 ? ' text-slate-500' : ' text-red-500')} ><span className='absolute right-0 text-[10px] bg-slate-900 rounded p-1 text-slate-50'>{task.taskStreak}</span></i></div>
             </div>
-            {task.lastUpdated && (
-              <div className="flex justify-end mt-4">
-                <span className="text-xs text-gray-500 italic">
-                  Last updated: {new Date(task.lastUpdated).toLocaleString()}
-                </span>
+            <div className="flex justify-between items-center mt-4">
+              <div className="flex flex-col">
+                {task.lastUpdated && (
+                  <span className="text-xs text-gray-500 italic">
+                    Last updated: {new Date(task.lastUpdated).toLocaleString()}
+                  </span>
+                )}
+                {/* Feedback Stats */}
+                <div className="flex items-center gap-4 mt-1 text-xs text-gray-600">
+                  <span className="flex items-center gap-1">
+                    💬 {task.commentsCount || 0} comments
+                  </span>
+                  <span className="flex items-center gap-1">
+                    👍 {task.likeCount || 0}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    👎 {task.dislikeCount || 0}
+                  </span>
+                </div>
               </div>
-            )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFeedbackModal({ taskInstanceId: task.id });
+                }}
+                className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                💬 Feedback
+              </button>
+            </div>
             {expandedTaskId === task.id && (
               <form
                 onSubmit={e => handleUpdateSubmit(e, task)}
@@ -200,6 +230,16 @@ const TaskStatuses: React.FC = () => {
         :(<div className='text-center text-gray-500'>No tasks found</div>)
         }
       </div>
+
+      {/* Feedback Modal */}
+      {feedbackModal && (
+        <TaskFeedback
+          taskInstanceId={feedbackModal.taskInstanceId}
+          isOpen={true}
+          onClose={() => setFeedbackModal(null)}
+          onUpdate={() => loadStatuses()}
+        />
+      )}
     </div>
   );
 };
