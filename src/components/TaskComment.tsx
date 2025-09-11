@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import UserLink from './UserLink';
 
 // Simple date formatting function
 const formatDistanceToNow = (date: Date) => {
@@ -24,6 +25,7 @@ interface TaskCommentProps {
       id: string;
       name: string;
       email: string;
+      hasPublicProfile?: boolean;
     };
     createdAt: string;
     updatedAt: string;
@@ -90,7 +92,11 @@ const TaskComment: React.FC<TaskCommentProps> = ({
               {comment.author.name?.charAt(0) || comment.author.email.charAt(0)}
             </div>
             <div>
-              <span className="font-medium text-sm">{comment.author.name || comment.author.email}</span>
+              <UserLink 
+                user={comment.author} 
+                className="font-medium text-sm"
+                showName={true}
+              />
               <span className="text-xs text-gray-500 ml-2">
                 {formatDistanceToNow(new Date(comment.createdAt))}
                 {comment.isEdited && ' (edited)'}

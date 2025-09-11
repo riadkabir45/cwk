@@ -17,6 +17,7 @@ interface Comment {
     id: string;
     name: string;
     email: string;
+    hasPublicProfile?: boolean;
   };
   createdAt: string;
   updatedAt: string;
