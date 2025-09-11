@@ -39,7 +39,7 @@ interface FeedbackStats {
 }
 
 const TaskFeedback: React.FC<TaskFeedbackProps> = ({ taskInstanceId, isOpen, onClose, onUpdate }) => {
-  const { session } = useAuth();
+  const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [stats, setStats] = useState<FeedbackStats | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -422,7 +422,7 @@ const TaskFeedback: React.FC<TaskFeedbackProps> = ({ taskInstanceId, isOpen, onC
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onReact={handleCommentReaction}
-                        currentUserId={session?.user?.id}
+                        currentUserId={user?.id}
                       />
                     ))}
                   </div>
