@@ -23,7 +23,8 @@ interface TaskCommentProps {
     content: string;
     author: {
       id: string;
-      name: string;
+      firstName?: string;
+      lastName?: string;
       email: string;
       hasPublicProfile?: boolean;
     };
@@ -89,7 +90,7 @@ const TaskComment: React.FC<TaskCommentProps> = ({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-              {comment.author.name?.charAt(0) || comment.author.email.charAt(0)}
+              {comment.author.firstName?.charAt(0) || comment.author.lastName?.charAt(0) || comment.author.email.charAt(0)}
             </div>
             <div>
               <UserLink 

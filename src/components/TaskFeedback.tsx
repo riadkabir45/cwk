@@ -15,7 +15,8 @@ interface Comment {
   content: string;
   author: {
     id: string;
-    name: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     hasPublicProfile?: boolean;
   };
@@ -58,15 +59,23 @@ const TaskFeedback: React.FC<TaskFeedbackProps> = ({ taskInstanceId, isOpen, onC
     setLoading(true);
     setError(null);
     try {
-      const [commentsRes, statsRes, taskRes] = await Promise.all([
-        api.get(`/api/task-feedback/comments/task-instance/${taskInstanceId}`),
-        api.get(`/api/task-feedback/stats/task-instance/${taskInstanceId}`),
-        api.get(`/task-instances/${taskInstanceId}`)
+      // First get the task instance to extract the task ID
+      const taskInstanceRes = await api.get(`/task-instances/${taskInstanceId}`);
+      const taskId = taskInstanceRes.data?.task?.id || taskInstanceRes.data?.taskId;
+      
+      if (!taskId) {
+        throw new Error('Task ID not found in task instance');
+      }
+
+      // Now get comments and stats for the entire task (all instances)
+      const [commentsRes, statsRes] = await Promise.all([
+        api.get(`/api/task-feedback/comments/task/${taskId}`),
+        api.get(`/api/task-feedback/stats/task/${taskId}`)
       ]);
       
       setComments(commentsRes.data || []);
       setStats(statsRes.data);
-      setTaskTitle(taskRes.data?.task || 'Task Feedback');
+      setTaskTitle(taskInstanceRes.data?.task?.title || taskInstanceRes.data?.taskTitle || 'Task Feedback');
     } catch (err) {
       setError('Failed to load feedback data');
       console.error('Error loading feedback:', err);
