@@ -42,6 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (session.user) {
         setUser({
           ...session.user,
+          id: backendUser.id, // Use backend user ID instead of Supabase ID
           primaryRole: backendUser.primaryRole,
           roles: backendUser.roles,
           firstName: backendUser.firstName,

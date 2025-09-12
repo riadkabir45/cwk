@@ -20,6 +20,7 @@ import ChatPage from './pages/Chating'
 import NotificationPage from './pages/NotificationPage'
 import LeaderBoard from './pages/LeaderBoard'
 import UserRankings from './pages/UserRankings'
+import UserProfile from './pages/UserProfile'
 
 function App() {
   return (
@@ -89,6 +90,16 @@ function App() {
         <Route path="/leaderBoard/:instanceId" element={
           <ProtectedRoute>
             <LeaderBoard />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/:userId" element={
+          <ProtectedRoute>
+            <UserProfile />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <UserProfile />
           </ProtectedRoute>
         } />
         <Route path="/:namespace" element={
