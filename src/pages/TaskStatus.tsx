@@ -55,7 +55,7 @@ const TaskStatuses: React.FC = () => {
        console.log(data);
        
     })
-    .catch(() => setMessage({ text: 'Failed to load tasks.', type: 'error' }));
+    .catch(() => setMessage({ text: 'Failed to load communities.', type: 'error' }));
     
   };
 
@@ -120,7 +120,7 @@ const TaskStatuses: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh]">
-      <h2 className="text-xl font-bold mb-6">Task Status</h2>
+      <h2 className="text-xl font-bold mb-6">My Communities</h2>
       <MessageBox message={message} setMessage={setMessage} />
       <div className="space-y-6">
         {taskStatuses.length > 0 ? (
@@ -143,7 +143,7 @@ const TaskStatuses: React.FC = () => {
             </div>
             <div className='flex justify-between'>
               <div>
-                <span className="font-medium text-sm">Recent Statuses:</span>
+                <span className="font-medium text-sm">Recent Updates:</span>
                 <div className="flex gap-2 mt-2">
                   {task.taskUpdates.length > 0 ? task.taskUpdates.slice(-5).map((status, idx) => (
                     <span
@@ -227,7 +227,7 @@ const TaskStatuses: React.FC = () => {
             )}
           </Tile>
         )))
-        :(<div className='text-center text-gray-500'>No tasks found</div>)
+        :(<div className='text-center text-gray-500'>No communities joined yet</div>)
         }
       </div>
 

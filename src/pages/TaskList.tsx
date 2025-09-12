@@ -46,7 +46,7 @@ const TaskList: React.FC = () => {
     }
   };
 
-  const handleInstanceSubmit = async (e: React.FormEvent, task: Task) => {
+  const handleJoinCommunity = async (e: React.FormEvent, task: Task) => {
     e.preventDefault();
     
     api.post('/task-instances',{
@@ -56,20 +56,21 @@ const TaskList: React.FC = () => {
       taskIntervalType: intervalUnit.toUpperCase(),
     })
     .then(() => {
-      setMessage({ text: 'Instance created successfully!', type: 'success' });
+      setMessage({ text: 'Successfully joined the community!', type: 'success' });
     })
     .catch(() => {
-      setMessage({ text: 'Failed to create instance.', type: 'error' });
+      setMessage({ text: 'Failed to join community.', type: 'error' });
     });
   };
 
   return (
     <div className="max-w-2xl mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh]">
-      <h2 className="text-xl font-bold mb-4">All Tasks</h2>
+      <h2 className="text-xl font-bold mb-2">Available Communities</h2>
+      <p className="text-gray-600 text-sm mb-4">Join communities to track your progress and connect with others who share similar goals.</p>
       <MessageBox message={message} setMessage={setMessage} />
       <input
         type="text"
-        placeholder="Search tasks..."
+        placeholder="Search communities..."
         className="w-full border rounded px-3 py-2 mb-4"
         value={search}
         onChange={e => setSearch(e.target.value)}
@@ -90,11 +91,11 @@ const TaskList: React.FC = () => {
             {expandedTaskId === task.id && (
               <form
                 onClick={e => e.stopPropagation()}
-                onSubmit={e => handleInstanceSubmit(e, task)}
+                onSubmit={e => handleJoinCommunity(e, task)}
                 className="bg-gray-50 border-t border-gray-200 px-4 pb-4 pt-2 rounded-b space-y-4 animate-fade-in mt-4"
               >
                 <div>
-                  <label className="block font-medium mb-1">Interval Value</label>
+                  <label className="block font-medium mb-1">How often do you want to check in?</label>
                   <input
                     type="number"
                     min={1}
@@ -105,7 +106,7 @@ const TaskList: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium mb-1">Interval Unit</label>
+                  <label className="block font-medium mb-1">Time period</label>
                   <select
                     className="w-full border rounded px-3 py-2"
                     value={intervalUnit}
@@ -122,14 +123,14 @@ const TaskList: React.FC = () => {
                   type="submit"
                   className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
                 >
-                  Create Instance
+                  Join Community
                 </button>
               </form>
             )}
           </Tile>
         ))}
         {filteredTasks.length === 0 && (
-          <div className="py-3 text-gray-400 text-center">No tasks found.</div>
+          <div className="py-3 text-gray-400 text-center">No communities found.</div>
         )}
       </div>
     </div>

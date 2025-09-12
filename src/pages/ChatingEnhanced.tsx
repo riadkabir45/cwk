@@ -72,7 +72,7 @@ const fetchMessages = () => {
   const fetchOtherUser = () => {
     if (!chatId) return;
     
-    api.get(`/connections/status/${chatId}`)
+    api.get(`/connections/${chatId}`)
       .then(res => {
         const connection: Connection = res.data;
         const otherUserInfo = connection.sender.email === user?.email 
