@@ -20,19 +20,19 @@ const CreateTask: React.FC = () => {
     };
 
     api.post('/tasks', data).then(() => {
-      setMessage({ text: 'Task created successfully!', type: 'success' });
+      setMessage({ text: 'Community created successfully!', type: 'success' });
     }).catch(() => {
-      setMessage({ text: 'Failed to create task.', type: 'error' });
+      setMessage({ text: 'Failed to create community.', type: 'error' });
     });
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow min-h-[60vh] mb-[20vh] flex flex-col justify-center">
-      <h2 className="text-xl font-bold mb-4">Create Task</h2>
+      <h2 className="text-xl font-bold mb-4">Create Community</h2>
       <MessageBox message={message} setMessage={setMessage} />
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block font-medium mb-1">Task Name</label>
+          <label className="block font-medium mb-1">Community Name</label>
           <input
             type="text"
             className="w-full border rounded px-3 py-2"
@@ -42,7 +42,7 @@ const CreateTask: React.FC = () => {
           />
         </div>
         <div>
-          <label className="block font-medium mb-1">Task Type</label>
+          <label className="block font-medium mb-1">Community Type</label>
           <select
             className="w-full border rounded px-3 py-2"
             value={taskType}
@@ -57,7 +57,7 @@ const CreateTask: React.FC = () => {
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
         >
-          Create Task
+          Create Community
         </button>
       </form>
     </div>
