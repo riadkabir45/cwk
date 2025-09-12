@@ -262,9 +262,7 @@ const Navbar: React.FC = () => {
                     onClick={() => navigate('/notifications')}
                     aria-label="Notifications"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-5-5V9.5a6.5 6.5 0 10-13 0V12l-5 5h5m0 0v1a3 3 0 006 0v-1m-6 0h6" />
-                    </svg>
+                    <i className='nf nf-oct-bell text-2xl'/>
                     {notificationCount > 0 && (
                       <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">
                         {notificationCount > 99 ? '99+' : notificationCount}
