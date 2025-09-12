@@ -60,7 +60,7 @@ const UserRankings: React.FC = () => {
                     ? 'bg-orange-400 text-white shadow-lg animate-pulse'
                     : 'bg-gray-300 text-gray-500'
                   }`}
-                  style={{ width: '2.5rem', height: '2.5rem' }}
+                  style={{ width: '3.5rem', height: '3.5rem' }}
                   title={task.taskStreak > 0 ? 'Streak!' : 'No streak'}
                 >
                   {task.taskStreak > 0 ? (
