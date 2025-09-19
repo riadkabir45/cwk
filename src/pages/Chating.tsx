@@ -27,7 +27,8 @@ interface Connection {
         "email": string,
     },
     "accepted": boolean,
-    "createdAt": string
+    "createdAt": string,
+    "mentor": boolean
 }
 
 const ChatPage: React.FC = () => {
@@ -45,9 +46,12 @@ const ChatPage: React.FC = () => {
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [otherUser, setOtherUser] = useState<{ email: string } | null>(null);
+  const [showRating, setShowRating] = useState(false);
+  const [rating, setRating] = useState(0);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState('');
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+  const [isMentoring, setIsMentoring] = useState(false);
 
   const refreshRate = 5;
   let isMounted = true;
@@ -75,6 +79,7 @@ const fetchMessages = () => {
     api.get(`/connections/status/${chatId}`)
       .then(res => {
         const connection: Connection = res.data;
+        setIsMentoring(connection.mentor);
         const otherUserInfo = connection.sender.email === user?.email 
           ? connection.receiver 
           : connection.sender;
@@ -182,6 +187,41 @@ const fetchMessages = () => {
       });
   };
 
+  const handleSubmitRating = () => {
+    if (rating === 0 || !chatId) return;
+    
+    api.post(`/connections/rate/${chatId}`, {
+      rating: rating,
+      comment: ''
+    })
+      .then(() => {
+        setMessage({ text: 'Rating submitted successfully!', type: 'success' });
+        setShowRating(false);
+        setRating(0);
+      })
+      .catch(err => {
+        console.error('Error submitting rating:', err);
+        const errorMsg = err.response?.data || 'Failed to submit rating';
+        setMessage({ text: errorMsg, type: 'error' });
+      });
+  };
+
+  const StarRating = () => {
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => setRating(star)}
+            className={`text-2xl ${star <= rating ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400 transition-colors`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -202,6 +242,51 @@ const fetchMessages = () => {
       </div>
 
       <MessageBox message={message} setMessage={setMessage} />
+      
+      {/* Mentor Rating Box */}
+      {isMentoring && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 m-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-yellow-800">Rate this Mentor</h3>
+              <p className="text-yellow-700">Share your experience with this mentor</p>
+            </div>
+            <button
+              onClick={() => setShowRating(!showRating)}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+            >
+              {showRating ? 'Cancel' : 'Rate ⭐'}
+            </button>
+          </div>
+          
+          {showRating && (
+            <div className="mt-4 p-4 bg-white rounded border">
+              <div className="mb-3">
+                <label className="block text-sm font-medium mb-2">Your Rating:</label>
+                <StarRating />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSubmitRating}
+                  disabled={rating === 0}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                >
+                  Submit Rating
+                </button>
+                <button
+                  onClick={() => {
+                    setShowRating(false);
+                    setRating(0);
+                  }}
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       
       {/* Chat Messages */}
       <div
