@@ -3,6 +3,7 @@ import { api } from '../../lib/api';
 import Tile from '../Tile';
 import MessageBox, { type MessageState } from '../MessageBox';
 import YesNoModal from '../YesNoModal';
+import TaskManagement from './TaskManagement';
 
 interface User {
   id: string;
@@ -44,6 +45,7 @@ const AdminPanel: React.FC = () => {
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
   const [search, setSearch] = useState('');
   const [modalAction, setModalAction] = useState<ModalAction>(null);
+  const [activeTab, setActiveTab] = useState<'users' | 'tasks'>('users');
 
   useEffect(() => {
     fetchUsers();
@@ -109,20 +111,48 @@ const AdminPanel: React.FC = () => {
   if (error) return <div className="p-10 text-center text-red-600 text-xl">{error}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-lg min-h-[60vh] mb-[20vh]">
+    <div className="max-w-6xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-lg min-h-[60vh] mb-[20vh]">
       <h1 className="text-3xl font-extrabold mb-8 text-indigo-700 flex items-center gap-2">
         <span role="img" aria-label="admin" className="text-3xl">🛡️</span>
-        Admin Panel - User Management
+        Admin Panel
       </h1>
-      <MessageBox message={message} setMessage={setMessage} />
-      <input
-        type="text"
-        placeholder="Search users by email or name..."
-        className="w-full mb-6 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-      />
-      <div className="grid gap-4">
+      
+      {/* Tab Navigation */}
+      <div className="flex space-x-1 mb-6">
+        <button
+          onClick={() => setActiveTab('users')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'users'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          User Management
+        </button>
+        <button
+          onClick={() => setActiveTab('tasks')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'tasks'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          Task Management
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'users' ? (
+        <div>
+          <MessageBox message={message} setMessage={setMessage} />
+          <input
+            type="text"
+            placeholder="Search users by email or name..."
+            className="w-full mb-6 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <div className="grid gap-4">
         {filteredUsers.map((user) => (
           <Tile key={user.id} className="flex flex-col md:flex-row justify-between items-center bg-slate-50 border border-slate-200 shadow-sm px-6 py-4">
             <div className="flex flex-col gap-1">
@@ -192,37 +222,41 @@ const AdminPanel: React.FC = () => {
             No users found
           </div>
         )}
-      </div>
-      <YesNoModal
-        open={!!modalAction}
-        message={
-          modalAction
-            ? (() => {
-                switch (modalAction.type) {
-                  case 'promoteMentor':
-                    return `Are you sure you want to promote ${modalAction.user.email} to Mentor?`;
-                  case 'demoteMentor':
-                    return `Are you sure you want to demote ${modalAction.user.email} from Mentor?`;
-                  case 'assignModerator':
-                    return `Are you sure you want to make ${modalAction.user.email} a Moderator?`;
-                  case 'removeModerator':
-                    return `Are you sure you want to remove Moderator role from ${modalAction.user.email}?`;
-                  default:
-                    return '';
-                }
-              })()
-            : ''
-        }
-        onYes={handleModalYes}
-        onNo={() => setModalAction(null)}
-        color={
-          modalAction?.type === 'removeModerator'
-            ? 'red'
-            : modalAction?.type === 'assignModerator'
-            ? 'yellow'
-            : 'indigo'
-        }
-      />
+          </div>
+          <YesNoModal
+            open={!!modalAction}
+            message={
+              modalAction
+                ? (() => {
+                    switch (modalAction.type) {
+                      case 'promoteMentor':
+                        return `Are you sure you want to promote ${modalAction.user.email} to Mentor?`;
+                      case 'demoteMentor':
+                        return `Are you sure you want to demote ${modalAction.user.email} from Mentor?`;
+                      case 'assignModerator':
+                        return `Are you sure you want to make ${modalAction.user.email} a Moderator?`;
+                      case 'removeModerator':
+                        return `Are you sure you want to remove Moderator role from ${modalAction.user.email}?`;
+                      default:
+                        return '';
+                    }
+                  })()
+                : ''
+            }
+            onYes={handleModalYes}
+            onNo={() => setModalAction(null)}
+            color={
+              modalAction?.type === 'removeModerator'
+                ? 'red'
+                : modalAction?.type === 'assignModerator'
+                ? 'yellow'
+                : 'indigo'
+            }
+          />
+        </div>
+      ) : (
+        <TaskManagement />
+      )}
     </div>
   );
 };
