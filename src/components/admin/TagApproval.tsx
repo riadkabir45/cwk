@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import MessageBox, { type MessageState } from '../MessageBox';
+import type { Tag } from '../../types/tag';
 
 interface TagSuggestion {
   id: string;
   suggestedName: string;
   description?: string;
-  justification?: string;
+  reason?: string;
   suggestedBy: {
     id: string;
     email: string;
@@ -18,8 +19,8 @@ interface TagSuggestion {
 
 interface TaskTagSuggestion {
   id: string;
-  suggestedTag: string;
-  justification?: string;
+  suggestedTag: Tag;
+  reason?: string;
   suggestedBy: {
     id: string;
     email: string;
@@ -247,10 +248,10 @@ const TagApproval: React.FC = () => {
                         <p className="text-gray-600 mb-3">{suggestion.description}</p>
                       )}
                       
-                      {suggestion.justification && (
+                      {suggestion.reason && (
                         <div className="mb-3">
                           <span className="text-sm font-medium text-gray-700">Justification: </span>
-                          <span className="text-sm text-gray-600">{suggestion.justification}</span>
+                          <span className="text-sm text-gray-600">{suggestion.reason}</span>
                         </div>
                       )}
                       
@@ -298,17 +299,17 @@ const TagApproval: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-lg font-semibold text-gray-800">
-                          Add "{suggestion.suggestedTag}" to "{suggestion.task.taskName}"
+                          Add "{suggestion.suggestedTag.name}" to "{suggestion.task.taskName}"
                         </h3>
                         <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
                           Pending
                         </span>
                       </div>
                       
-                      {suggestion.justification && (
+                      {suggestion.reason && (
                         <div className="mb-3">
                           <span className="text-sm font-medium text-gray-700">Justification: </span>
-                          <span className="text-sm text-gray-600">{suggestion.justification}</span>
+                          <span className="text-sm text-gray-600">{suggestion.reason}</span>
                         </div>
                       )}
                       

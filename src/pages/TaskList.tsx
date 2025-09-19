@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import Tile from '../components/Tile';
+import TaskTagList from '../components/TaskTagList';
 import { api } from '../lib/api';
 
 type Task = {
@@ -26,7 +27,7 @@ const TaskList: React.FC = () => {
 
 
   useEffect(() => {
-    api.get('/tasks')
+    api.get('/api/tasks')
       .then(res => setTasks(res.data || []))
       .catch(() => setMessage({ text: 'Failed to load tasks.', type: 'error' }));
   }, []);
@@ -82,50 +83,69 @@ const TaskList: React.FC = () => {
             className={`transition-colors cursor-pointer ${expandedTaskId === task.id ? 'ring-2 ring-slate-400 bg-slate-50' : 'hover:bg-indigo-50'}`}
             onClick={() => handleTileClick(task)}
           >
-            <div className="flex justify-between items-center">
-              <span className="font-medium text-lg">{task.taskName}</span>
-              <span className="text-xs text-gray-500 px-2 py-1 rounded bg-gray-100">
-                {task.type === 'number' ? 'Number' : 'Yes / No'}
-              </span>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-lg">{task.taskName}</span>
+                <span className="text-xs text-gray-500 px-2 py-1 rounded bg-gray-100">
+                  {task.type === 'number' ? 'Number' : 'Yes / No'}
+                </span>
+              </div>
+              
+              {/* Compact Tag Display for collapsed view */}
+              {expandedTaskId !== task.id && (
+                <div onClick={e => e.stopPropagation()}>
+                  <TaskTagList taskId={task.id} canSuggestTags={false} compact={true} />
+                </div>
+              )}
             </div>
             {expandedTaskId === task.id && (
-              <form
+              <div 
                 onClick={e => e.stopPropagation()}
-                onSubmit={e => handleJoinCommunity(e, task)}
                 className="bg-gray-50 border-t border-gray-200 px-4 pb-4 pt-2 rounded-b space-y-4 animate-fade-in mt-4"
               >
-                <div>
-                  <label className="block font-medium mb-1">How often do you want to check in?</label>
-                  <input
-                    type="number"
-                    min={1}
-                    className="w-full border rounded px-3 py-2"
-                    value={intervalValue}
-                    onChange={e => setIntervalValue(Number(e.target.value))}
-                    required
-                  />
+                {/* Task Tags Section */}
+                <div className="bg-white rounded-lg p-4 border">
+                  <TaskTagList taskId={task.id} canSuggestTags={true} />
                 </div>
-                <div>
-                  <label className="block font-medium mb-1">Time period</label>
-                  <select
-                    className="w-full border rounded px-3 py-2"
-                    value={intervalUnit}
-                    onChange={e => setIntervalUnit(e.target.value)}
-                  >
-                    {INTERVAL_UNITS.map(unit => (
-                      <option key={unit.value} value={unit.value}>
-                        {unit.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+
+                {/* Join Community Form */}
+                <form
+                  onSubmit={e => handleJoinCommunity(e, task)}
+                  className="space-y-4"
                 >
-                  Join Community
-                </button>
-              </form>
+                  <div>
+                    <label className="block font-medium mb-1">How often do you want to check in?</label>
+                    <input
+                      type="number"
+                      min={1}
+                      className="w-full border rounded px-3 py-2"
+                      value={intervalValue}
+                      onChange={e => setIntervalValue(Number(e.target.value))}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium mb-1">Time period</label>
+                    <select
+                      className="w-full border rounded px-3 py-2"
+                      value={intervalUnit}
+                      onChange={e => setIntervalUnit(e.target.value)}
+                    >
+                      {INTERVAL_UNITS.map(unit => (
+                        <option key={unit.value} value={unit.value}>
+                          {unit.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                  >
+                    Join Community
+                  </button>
+                </form>
+              </div>
             )}
           </Tile>
         ))}

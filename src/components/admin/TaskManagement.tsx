@@ -34,7 +34,7 @@ const TaskManagement: React.FC = () => {
     try {
       if (showLoading) setLoading(true);
       console.log('Fetching tasks...');
-      const response = await api.get('/tasks');
+      const response = await api.get('/api/tasks');
       console.log('Tasks fetched:', response.data);
       setTasks(response.data);
     } catch (error) {
@@ -57,7 +57,7 @@ const TaskManagement: React.FC = () => {
       setRenameLoading(true);
       console.log('Attempting to rename task:', renameModalData.task.id, 'to:', renameModalData.newName.trim());
       
-      const response = await api.put(`/tasks/${renameModalData.task.id}/rename`, {
+      const response = await api.put(`/api/tasks/${renameModalData.task.id}/rename`, {
         newName: renameModalData.newName.trim()
       });
       
@@ -100,7 +100,7 @@ const TaskManagement: React.FC = () => {
     if (!taskToDelete) return;
 
     try {
-      await api.delete(`/tasks/admin/${taskToDelete.id}`);
+      await api.delete(`/api/tasks/admin/${taskToDelete.id}`);
       
       setMessage({ text: 'Task deleted successfully!', type: 'success' });
       setShowDeleteModal(false);

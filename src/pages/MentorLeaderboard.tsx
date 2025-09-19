@@ -47,7 +47,7 @@ const MentorLeaderboard: React.FC = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await api.get('/tasks');
+      const response = await api.get('/api/tasks');
       setAllTasks(response.data);
     } catch (err) {
       console.error('Error fetching tasks:', err);

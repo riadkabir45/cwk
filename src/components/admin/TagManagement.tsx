@@ -17,7 +17,7 @@ const TagManagement: React.FC = () => {
       setLoading(true);
       const [tagSuggestionsResponse, taskTagSuggestionsResponse] = await Promise.all([
         api.get('/api/tags/suggestions/pending'),
-        api.get('/api/tasks/tag-suggestions/pending')
+        api.get('/api/tags/task-suggestions/pending')
       ]);
       
       setTagSuggestions(tagSuggestionsResponse.data);
@@ -45,7 +45,7 @@ const TagManagement: React.FC = () => {
 
   const handleTaskTagSuggestionAction = async (suggestionId: string, action: 'approve' | 'reject') => {
     try {
-      await api.put(`/api/tasks/tag-suggestions/${suggestionId}/${action}`);
+      await api.post(`/api/tags/task-suggestions/${suggestionId}/${action}`);
       
       // Remove from list or refetch
       setTaskTagSuggestions(prev => prev.filter(s => s.id !== suggestionId));

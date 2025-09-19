@@ -32,7 +32,7 @@ const CreateTask: React.FC = () => {
       tagIds: selectedTags.map(tag => tag.id)
     };
 
-    api.post('/tasks', data).then(() => {
+    api.post('/api/tasks', data).then(() => {
       setMessage({ text: 'Community created successfully!', type: 'success' });
       setTaskName('');
       setSelectedTags([]);
