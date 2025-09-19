@@ -21,6 +21,7 @@ import NotificationPage from './pages/NotificationPage'
 import LeaderBoard from './pages/LeaderBoard'
 import UserRankings from './pages/UserRankings'
 import UserProfile from './pages/UserProfile'
+import MentorLeaderboard from './pages/MentorLeaderboard'
 
 function App() {
   return (
@@ -90,6 +91,11 @@ function App() {
         <Route path="/leaderBoard/:instanceId" element={
           <ProtectedRoute>
             <LeaderBoard />
+          </ProtectedRoute>
+        } />
+        <Route path="/mentors/leaderboard" element={
+          <ProtectedRoute>
+            <MentorLeaderboard />
           </ProtectedRoute>
         } />
         <Route path="/profile/:userId" element={
