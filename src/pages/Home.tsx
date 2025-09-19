@@ -400,7 +400,7 @@ const Home: React.FC = () => {
                           <span className="text-gray-500">completed</span>
                           <p className="text-lg font-medium text-blue-600">{update.taskName}</p>
                         </div>
-                        <p className="text-gray-700 mb-3 text-lg">{update.updateText}</p>
+                        <p className="text-gray-700 mb-3 text-lg">{update.updateText === "true" ? "Great progress today!" : update.updateText === "false" ? "Lets try again mate" : update.updateText}</p>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex flex-wrap gap-2">
                             {update.tags.slice(0, 3).map((tag) => (
