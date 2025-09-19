@@ -4,6 +4,7 @@ import Tile from '../Tile';
 import MessageBox, { type MessageState } from '../MessageBox';
 import YesNoModal from '../YesNoModal';
 import TaskManagement from './TaskManagement';
+import TagApproval from './TagApproval';
 
 interface User {
   id: string;
@@ -45,7 +46,7 @@ const AdminPanel: React.FC = () => {
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
   const [search, setSearch] = useState('');
   const [modalAction, setModalAction] = useState<ModalAction>(null);
-  const [activeTab, setActiveTab] = useState<'users' | 'tasks'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'tasks' | 'tags'>('users');
 
   useEffect(() => {
     fetchUsers();
@@ -138,6 +139,16 @@ const AdminPanel: React.FC = () => {
           }`}
         >
           Task Management
+        </button>
+        <button
+          onClick={() => setActiveTab('tags')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'tags'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          Tag Approval
         </button>
       </div>
 
@@ -254,9 +265,11 @@ const AdminPanel: React.FC = () => {
             }
           />
         </div>
-      ) : (
+      ) : activeTab === 'tasks' ? (
         <TaskManagement />
-      )}
+      ) : activeTab === 'tags' ? (
+        <TagApproval />
+      ) : null}
     </div>
   );
 };
