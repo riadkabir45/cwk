@@ -66,8 +66,6 @@ const TagSuggestionModal: React.FC<TagSuggestionModalProps> = ({
       
       onSuggestionSubmitted?.();
       onClose();
-      
-      alert('Tag suggestion submitted successfully! It will be reviewed by a mentor.');
     } catch (error: any) {
       setError(error.response?.data?.message || 'Failed to submit suggestion');
     } finally {

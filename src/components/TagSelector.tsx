@@ -6,12 +6,14 @@ interface TagSelectorProps {
   selectedTags: Tag[];
   onTagsChange: (tags: Tag[]) => void;
   maxTags?: number;
+  onError?: (message: string) => void;
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({ 
   selectedTags, 
   onTagsChange, 
-  maxTags = 5 
+  maxTags = 5,
+  onError
 }) => {
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,7 +63,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 
   const addTag = (tag: Tag) => {
     if (selectedTags.length >= maxTags) {
-      alert(`You can only select up to ${maxTags} tags`);
+      onError?.(`You can only select up to ${maxTags} tags`);
       return;
     }
 

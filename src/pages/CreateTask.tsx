@@ -77,6 +77,7 @@ const CreateTask: React.FC = () => {
             selectedTags={selectedTags}
             onTagsChange={setSelectedTags}
             maxTags={5}
+            onError={(errorMessage) => setMessage({ text: errorMessage, type: 'error' })}
           />
           <button
             type="button"

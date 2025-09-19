@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import type { TagSuggestion, TaskTagSuggestion } from '../../types/tag';
+import MessageBox from '../MessageBox';
+import type { MessageState } from '../MessageBox';
 
 const TagManagement: React.FC = () => {
   const [tagSuggestions, setTagSuggestions] = useState<TagSuggestion[]>([]);
   const [taskTagSuggestions, setTaskTagSuggestions] = useState<TaskTagSuggestion[]>([]);
   const [activeTab, setActiveTab] = useState<'tags' | 'taskTags'>('tags');
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<MessageState>({ text: '', type: null });
 
   useEffect(() => {
     fetchPendingSuggestions();
@@ -37,9 +40,9 @@ const TagManagement: React.FC = () => {
       
       // Remove from list or refetch
       setTagSuggestions(prev => prev.filter(s => s.id !== suggestionId));
-      alert(`Tag suggestion ${action}d successfully!`);
+      setMessage({ text: `Tag suggestion ${action}d successfully!`, type: 'success' });
     } catch (error: any) {
-      alert(error.response?.data?.message || `Failed to ${action} suggestion`);
+      setMessage({ text: error.response?.data?.message || `Failed to ${action} suggestion`, type: 'error' });
     }
   };
 
@@ -49,9 +52,9 @@ const TagManagement: React.FC = () => {
       
       // Remove from list or refetch
       setTaskTagSuggestions(prev => prev.filter(s => s.id !== suggestionId));
-      alert(`Task tag suggestion ${action}d successfully!`);
+      setMessage({ text: `Task tag suggestion ${action}d successfully!`, type: 'success' });
     } catch (error: any) {
-      alert(error.response?.data?.message || `Failed to ${action} suggestion`);
+      setMessage({ text: error.response?.data?.message || `Failed to ${action} suggestion`, type: 'error' });
     }
   };
 
@@ -193,6 +196,8 @@ const TagManagement: React.FC = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Tag Management</h1>
+      
+      <MessageBox message={message} setMessage={setMessage} />
 
       {/* Tabs */}
       <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6">

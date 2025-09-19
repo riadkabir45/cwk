@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import type { Tag } from '../types/tag';
 import TagSuggestionModal from './TagSuggestionModal';
+import MessageBox from './MessageBox';
+import type { MessageState } from './MessageBox';
 
 interface TaskTagListProps {
   taskId: string;
@@ -17,6 +19,7 @@ const TaskTagList: React.FC<TaskTagListProps> = ({ taskId, canSuggestTags = true
   const [suggestionReason, setSuggestionReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [showNewTagModal, setShowNewTagModal] = useState(false);
+  const [message, setMessage] = useState<MessageState>({ text: '', type: null });
 
   useEffect(() => {
     fetchTaskTags();
@@ -57,16 +60,16 @@ const TaskTagList: React.FC<TaskTagListProps> = ({ taskId, canSuggestTags = true
       console.log('Tag suggestion response:', response.data);
       
       if (response.data.success) {
-        alert('Tag suggestion submitted successfully!');
+        setMessage({ text: 'Tag suggestion submitted successfully!', type: 'success' });
         closeModal();
       } else {
         console.error('Tag suggestion failed:', response.data);
-        alert('Failed to submit tag suggestion. Please try again.');
+        setMessage({ text: 'Failed to submit tag suggestion. Please try again.', type: 'error' });
       }
     } catch (error: any) {
       console.error('Error suggesting tag for task:', error);
       console.error('Error response:', error.response);
-      alert('Failed to submit tag suggestion. Please check your connection and try again.');
+      setMessage({ text: 'Failed to submit tag suggestion. Please check your connection and try again.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -90,13 +93,16 @@ const TaskTagList: React.FC<TaskTagListProps> = ({ taskId, canSuggestTags = true
 
   const handleNewTagSuggested = () => {
     setShowNewTagModal(false);
+    setMessage({ text: 'New tag suggestion submitted successfully!', type: 'success' });
     // Refresh available tags by reloading them
     fetchAvailableTags();
   };
 
   return (
     <div className={compact ? "space-y-1" : "space-y-3"}>
-            {!compact && (
+      <MessageBox message={message} setMessage={setMessage} />
+      
+      {!compact && (
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Tags</h3>
           {canSuggestTags && (

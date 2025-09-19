@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import MessageBox from '../components/MessageBox';
+import type { MessageState } from '../components/MessageBox';
 
 interface MentorLeaderboard {
   id: string;
@@ -28,6 +30,7 @@ const MentorLeaderboard: React.FC = () => {
   const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<MessageState>({ text: '', type: null });
   const [error, setError] = useState<string | null>(null);
   const [connectingToMentor, setConnectingToMentor] = useState<string | null>(null);
 
@@ -80,11 +83,11 @@ const MentorLeaderboard: React.FC = () => {
       );
       
       // Show success message (you can replace this with a toast notification)
-      alert('Connection request sent successfully!');
+      setMessage({ text: 'Connection request sent successfully!', type: 'success' });
     } catch (err: any) {
       console.error('Error sending connection request:', err);
       const errorMessage = err.response?.data || err.message || 'Failed to send connection request';
-      alert(`Error: ${errorMessage}`);
+      setMessage({ text: `Error: ${errorMessage}`, type: 'error' });
     } finally {
       setConnectingToMentor(null);
     }
@@ -181,6 +184,8 @@ const MentorLeaderboard: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto mt-6 p-6">
+      <MessageBox message={message} setMessage={setMessage} />
+      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Mentor Leaderboard</h1>
         <p className="text-gray-600">Find the best mentors based on community ratings</p>
