@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       {/* Mobile-only toggle button */}
-      <div className="md:hidden bg-white shadow-sm border-b border-gray-200">
+      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-between p-4">
           <Link to="/" className="text-xl font-bold text-indigo-600">
             CoWork
@@ -100,7 +100,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Desktop Navbar */}
-      <nav className="bg-white shadow-sm border-b border-gray-200 hidden md:block">
+      <nav className="bg-white shadow-sm border-b border-gray-200 hidden lg:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -109,7 +109,7 @@ const Navbar: React.FC = () => {
                   CoWork
                 </Link>
               </div>
-              <div className="hidden md:ml-10 md:flex md:space-x-1">
+              <div className="hidden lg:ml-10 lg:flex lg:space-x-1">
                 <ul className="flex space-x-1">
                   {renderNavItems(navigationItems)}
                 </ul>

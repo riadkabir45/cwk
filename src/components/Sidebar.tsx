@@ -98,14 +98,14 @@ const Sidebar: React.FC = () => {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity md:hidden"
+          className="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity lg:hidden"
           onClick={toggleSidebar}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-30 w-72 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 left-0 z-30 w-72 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:hidden ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

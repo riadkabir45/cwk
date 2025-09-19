@@ -6,7 +6,6 @@ import SignUp from './components/auth/SignUp'
 import Login from './components/auth/Login'
 import ForgotPassword from './components/auth/ForgotPassword'
 import Home from './pages/Home'
-import Dashboard from './pages/Dashboard'
 import MainLayout from './components/layout/MainLayout'
 import AuthLayout from './components/layout/AuthLayout'
 import CreateTask from './pages/CreateTask';
@@ -32,11 +31,6 @@ function App() {
         <Route path="/" element={
           <ProtectedRoute>
             <Home />
-          </ProtectedRoute>
-        } />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Dashboard />
           </ProtectedRoute>
         } />
         <Route path="/admin" element={

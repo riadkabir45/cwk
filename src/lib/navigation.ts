@@ -15,11 +15,6 @@ export const getNavigationItems = (role: string): NavItem[] => {
       icon: 'home' 
     },
     {
-      to: '/dashboard',
-      label: 'Dashboard',
-      icon: 'dashboard'
-    },
-    {
       to: '/communities',
       label: 'Communities',
       icon: 'communities',
