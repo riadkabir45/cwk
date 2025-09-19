@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import MessageBox from '../components/MessageBox';
+import Avatar from '../components/Avatar';
 
 interface TaskUpdate {
   id: string;
@@ -27,6 +28,7 @@ interface Comment {
     firstName: string;
     lastName: string;
     email: string;
+    profilePicture?: string;
   };
   createdAt: string;
   replyCount: number;
@@ -441,11 +443,13 @@ const Home: React.FC = () => {
                                 {update.comments.map((comment) => (
                                   <div key={comment.id} className="flex space-x-3">
                                     <div className="flex-shrink-0">
-                                      <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                                        <span className="text-white font-medium text-xs">
-                                          {comment.author.firstName.charAt(0).toUpperCase()}
-                                        </span>
-                                      </div>
+                                      <Avatar
+                                        src={comment.author.profilePicture}
+                                        firstName={comment.author.firstName}
+                                        lastName={comment.author.lastName}
+                                        email={comment.author.email}
+                                        size="sm"
+                                      />
                                     </div>
                                     <div className="flex-1">
                                       <div className="bg-gray-50 rounded-lg px-3 py-2">

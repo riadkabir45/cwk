@@ -3,6 +3,7 @@ import Tile from '../components/Tile';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
+import Avatar from '../components/Avatar';
 
 interface User {
   id: string;
@@ -40,10 +41,6 @@ const ChatList: React.FC = () => {
     u.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase();
-  };
-
   const handleStartChat = (otherUser: User) => {
     api.get(`/connections/${otherUser.email}`)
       .then((res) => {
@@ -77,17 +74,13 @@ const ChatList: React.FC = () => {
           <Tile key={u.id}>
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
-                {u.profilePicture ? (
-                  <img
-                    src={u.profilePicture}
-                    alt={`${u.firstName} ${u.lastName}`}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-lg">
-                    {getInitials(u.firstName, u.lastName)}
-                  </div>
-                )}
+                <Avatar
+                  src={u.profilePicture}
+                  firstName={u.firstName}
+                  lastName={u.lastName}
+                  email={u.email}
+                  size="md"
+                />
                 <div>
                   <span className="font-medium text-lg">{u.firstName} {u.lastName}</span>
                   <span className="block text-xs text-gray-500">{u.email}</span>

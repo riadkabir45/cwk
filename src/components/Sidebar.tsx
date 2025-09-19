@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
+import Avatar from './Avatar';
 
 const Sidebar: React.FC = () => {
   const { isOpen, toggleSidebar } = useSidebar();
@@ -108,13 +109,6 @@ const Sidebar: React.FC = () => {
     return user?.email || 'User';
   };
 
-  const getUserInitials = () => {
-    if (user?.user_metadata?.first_name && user?.user_metadata?.last_name) {
-      return `${user.user_metadata.first_name[0]}${user.user_metadata.last_name[0]}`.toUpperCase();
-    }
-    return user?.email?.[0]?.toUpperCase() || 'U';
-  };
-
   return (
     <>
       {/* Overlay to close sidebar on mobile */}
@@ -183,9 +177,13 @@ const Sidebar: React.FC = () => {
                 {/* Sidebar footer */}
                 <div className="pt-4 border-t border-gray-300">
                   <div className="flex items-center p-3 rounded-lg bg-white shadow-sm">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                      {getUserInitials()}
-                    </div>
+                    <Avatar
+                      firstName={user?.user_metadata?.first_name}
+                      lastName={user?.user_metadata?.last_name}
+                      email={user?.email}
+                      size="md"
+                      className="bg-gradient-to-br from-indigo-500 to-purple-600"
+                    />
                     <div className="ml-3 flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-700 truncate">{getUserDisplayName()}</p>
                       <Link 

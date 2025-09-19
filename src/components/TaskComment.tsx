@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import UserLink from './UserLink';
+import Avatar from './Avatar';
 
 // Simple date formatting function
 const formatDistanceToNow = (date: Date) => {
@@ -89,9 +90,12 @@ const TaskComment: React.FC<TaskCommentProps> = ({
         {/* Comment Header */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-              {comment.author.firstName?.charAt(0) || comment.author.lastName?.charAt(0) || comment.author.email.charAt(0)}
-            </div>
+            <Avatar
+              firstName={comment.author.firstName}
+              lastName={comment.author.lastName}
+              email={comment.author.email}
+              size="sm"
+            />
             <div>
               <UserLink 
                 user={comment.author} 

@@ -4,6 +4,7 @@ import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
 import ProtectedComponent from './ProtectedComponent';
+import Avatar from './Avatar';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -101,13 +102,6 @@ const Navbar: React.FC = () => {
       return `${user.user_metadata.first_name} ${user.user_metadata.last_name}`;
     }
     return user?.email || 'User';
-  };
-
-  const getUserInitials = () => {
-    if (user?.user_metadata?.first_name && user?.user_metadata?.last_name) {
-      return `${user.user_metadata.first_name[0]}${user.user_metadata.last_name[0]}`.toUpperCase();
-    }
-    return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
   return (
@@ -277,9 +271,13 @@ const Navbar: React.FC = () => {
                     onClick={toggleUserMenu}
                     className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
                   >
-                    <div className="relative w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
-                      {getUserInitials()}
-                    </div>
+                    <Avatar
+                      firstName={user?.user_metadata?.first_name}
+                      lastName={user?.user_metadata?.last_name}
+                      email={user?.email}
+                      size="md"
+                      className="shadow-md bg-gradient-to-br from-indigo-500 to-purple-600"
+                    />
                     <span className="text-sm font-medium hidden md:block">{getUserDisplayName()}</span>
                     <svg 
                       className={`w-4 h-4 transform transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} 
@@ -501,9 +499,13 @@ const Navbar: React.FC = () => {
               <div className="pt-3 border-t border-gray-200 bg-white">
                 <div className="px-4 py-2">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                      {getUserInitials()}
-                    </div>
+                    <Avatar
+                      firstName={user?.user_metadata?.first_name}
+                      lastName={user?.user_metadata?.last_name}
+                      email={user?.email}
+                      size="md"
+                      className="bg-gradient-to-br from-indigo-500 to-purple-600"
+                    />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{getUserDisplayName()}</p>
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>

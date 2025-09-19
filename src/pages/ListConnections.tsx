@@ -3,6 +3,7 @@ import Tile from '../components/Tile';
 import MessageBox, { type MessageState } from '../components/MessageBox';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
+import Avatar from '../components/Avatar';
 
 interface Connection {
   id: string;
@@ -71,12 +72,23 @@ const ListConnections: React.FC = () => {
         {filteredChats.filter(chat => !acceptedChats.some(ac => ac.id === chat.id)).map(chat => (
           <Tile key={chat.id}>
             <div className="flex justify-between items-center">
-              <div>
-                <span className="font-medium text-lg">{chat.sender.email}</span>
-                <span className="block text-xs text-gray-500">{chat.sender.email}</span>
-                <span className="block text-xs text-gray-400 italic mt-1">
-                  Last message: {chat.upDateTime}
-                </span>
+              <div className="flex items-center space-x-3 flex-1">
+                <Avatar
+                  src={chat.sender.profilePicture}
+                  firstName={chat.sender.firstName}
+                  lastName={chat.sender.lastName}
+                  email={chat.sender.email}
+                  size="md"
+                />
+                <div>
+                  <span className="font-medium text-lg">
+                    {chat.sender.firstName} {chat.sender.lastName}
+                  </span>
+                  <span className="block text-xs text-gray-500">{chat.sender.email}</span>
+                  <span className="block text-xs text-gray-400 italic mt-1">
+                    Last message: {chat.upDateTime}
+                  </span>
+                </div>
               </div>
               <button
                 className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"

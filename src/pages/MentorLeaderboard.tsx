@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import MessageBox from '../components/MessageBox';
 import type { MessageState } from '../components/MessageBox';
+import Avatar from '../components/Avatar';
 
 interface MentorLeaderboard {
   id: string;
@@ -253,17 +254,13 @@ const MentorLeaderboard: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        {mentor.profilePicture ? (
-                          <img
-                            className="h-10 w-10 rounded-full object-cover"
-                            src={mentor.profilePicture}
-                            alt={`${mentor.firstName} ${mentor.lastName}`}
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                            {mentor.firstName?.[0]?.toUpperCase() || mentor.email[0].toUpperCase()}
-                          </div>
-                        )}
+                        <Avatar
+                          src={mentor.profilePicture}
+                          firstName={mentor.firstName}
+                          lastName={mentor.lastName}
+                          email={mentor.email}
+                          size="md"
+                        />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">

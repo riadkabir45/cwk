@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
+import Avatar from '../components/Avatar';
 
 interface MessageState {
   text: string;
@@ -168,10 +169,13 @@ const UserProfile: React.FC = () => {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-32 relative">
           <div className="absolute -bottom-16 left-8">
-            <img
-              src={profile.profilePicture || '/default-avatar.png'}
-              alt="Profile"
-              className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
+            <Avatar
+              src={profile.profilePicture}
+              firstName={profile.firstName}
+              lastName={profile.lastName}
+              email={profile.email}
+              size="2xl"
+              className="border-4 border-white shadow-lg"
             />
           </div>
           {profile.isOwnProfile && (

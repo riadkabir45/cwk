@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import MessageBox from '../components/MessageBox';
+import Avatar from '../components/Avatar';
 
 interface TaskUpdate {
   id: string;
@@ -17,7 +18,9 @@ interface TaskUpdate {
   }>;
   comments?: Comment[];
   commentCount?: number;
-}interface Comment {
+}
+
+interface Comment {
   id: string;
   content: string;
   author: {
@@ -295,11 +298,11 @@ const Dashboard: React.FC = () => {
                   <div key={update.id} className="p-6 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white font-medium text-sm">
-                            {update.userName.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
+                        <Avatar
+                          firstName={update.userName.split(' ')[0]}
+                          lastName={update.userName.split(' ')[1]}
+                          size="md"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-1">
@@ -366,11 +369,12 @@ const Dashboard: React.FC = () => {
                                 {update.comments.map((comment) => (
                                   <div key={comment.id} className="flex space-x-3">
                                     <div className="flex-shrink-0">
-                                      <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                                        <span className="text-white font-medium text-xs">
-                                          {comment.author.firstName.charAt(0).toUpperCase()}
-                                        </span>
-                                      </div>
+                                      <Avatar
+                                        firstName={comment.author.firstName}
+                                        lastName={comment.author.lastName}
+                                        email={comment.author.email}
+                                        size="sm"
+                                      />
                                     </div>
                                     <div className="flex-1">
                                       <div className="bg-gray-50 rounded-lg px-3 py-2">
@@ -445,16 +449,24 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="p-6 space-y-4">
               {communitySuggestions.length > 0 ? (
-                communitySuggestions.slice(0, 3).map((user) => (
-                  <div key={user.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white font-medium text-sm">
-                            {user.name.charAt(0).toUpperCase()}
-                          </span>
+                communitySuggestions.slice(0, 3).map((user) => {
+                  // Better name parsing
+                  const nameParts = user.name?.trim().split(/\s+/) || [];
+                  const firstName = nameParts[0] || '';
+                  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+                  
+                  return (
+                    <div key={user.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="flex-shrink-0">
+                          <Avatar
+                            src={user.profilePicture}
+                            firstName={firstName}
+                            lastName={lastName}
+                            email={user.email}
+                            size="md"
+                          />
                         </div>
-                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
@@ -474,7 +486,8 @@ const Dashboard: React.FC = () => {
                       Connect
                     </button>
                   </div>
-                ))
+                  );
+                })
               ) : (
                 <p className="text-gray-500 text-sm text-center py-4">
                   No connection suggestions available
