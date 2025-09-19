@@ -28,7 +28,8 @@ interface Connection {
     },
     "accepted": boolean,
     "createdAt": string,
-    "mentor": boolean
+    "mentor": boolean,
+    "currentRating": number
 }
 
 const ChatPage: React.FC = () => {
@@ -52,6 +53,7 @@ const ChatPage: React.FC = () => {
   const [editingContent, setEditingContent] = useState('');
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const [isMentoring, setIsMentoring] = useState(false);
+  const [currentRating, setCurrentRating] = useState(0);
 
   const refreshRate = 5;
   let isMounted = true;
@@ -78,11 +80,13 @@ const fetchMessages = () => {
     
     api.get(`/connections/status/${chatId}`)
       .then(res => {
-        const connection: Connection = res.data;
-        setIsMentoring(connection.mentor);
-        const otherUserInfo = connection.sender.email === user?.email 
-          ? connection.receiver 
-          : connection.sender;
+        const connectionData: Connection = res.data;
+        setIsMentoring(connectionData.mentor);
+        setCurrentRating(connectionData.currentRating || 0);
+        
+        const otherUserInfo = connectionData.sender.email === user?.email 
+          ? connectionData.receiver 
+          : connectionData.sender;
         
         if (isMounted) {
           setOtherUser(otherUserInfo);
@@ -195,9 +199,13 @@ const fetchMessages = () => {
       comment: ''
     })
       .then(() => {
-        setMessage({ text: 'Rating submitted successfully!', type: 'success' });
+        const action = currentRating !== 0 ? 'updated' : 'submitted';
+        const ratingType = rating < 0 ? 'negative' : 'positive';
+        setMessage({ text: `${ratingType.charAt(0).toUpperCase() + ratingType.slice(1)} rating ${action} successfully!`, type: 'success' });
         setShowRating(false);
         setRating(0);
+        // Refresh connection data to get updated rating
+        fetchOtherUser();
       })
       .catch(err => {
         console.error('Error submitting rating:', err);
@@ -207,17 +215,44 @@ const fetchMessages = () => {
   };
 
   const StarRating = () => {
+    const negativeRatings = [-2, -1];
+    const positiveRatings = [1, 2, 3, 4, 5];
+    
     return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onClick={() => setRating(star)}
-            className={`text-2xl ${star <= rating ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400 transition-colors`}
-          >
-            ★
-          </button>
-        ))}
+      <div className="flex flex-col gap-3">
+        {/* Negative Ratings */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-red-600">Poor:</span>
+          <div className="flex gap-1">
+            {negativeRatings.map((value) => (
+              <button
+                key={value}
+                onClick={() => setRating(value)}
+                className={`text-2xl ${rating === value ? 'text-red-500' : 'text-gray-300'} hover:text-red-500 transition-colors`}
+                title={value === -2 ? 'Very Poor' : 'Poor'}
+              >
+                👎
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        {/* Positive Ratings */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-yellow-600">Good:</span>
+          <div className="flex gap-1">
+            {positiveRatings.map((star) => (
+              <button
+                key={star}
+                onClick={() => setRating(star)}
+                className={`text-2xl ${star <= rating && rating > 0 ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400 transition-colors`}
+                title={`${star} star${star > 1 ? 's' : ''}`}
+              >
+                ★
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   };
@@ -250,19 +285,48 @@ const fetchMessages = () => {
             <div>
               <h3 className="text-lg font-medium text-yellow-800">Rate this Mentor</h3>
               <p className="text-yellow-700">Share your experience with this mentor</p>
+              {currentRating !== 0 && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-sm text-yellow-600">Current rating:</span>
+                  {currentRating < 0 ? (
+                    <div className="flex items-center gap-1">
+                      <span className={`text-lg text-red-500`}>
+                        👎
+                      </span>
+                      <span className="text-sm text-red-600">({currentRating})</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={`text-lg ${star <= currentRating ? 'text-yellow-400' : 'text-gray-300'}`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-sm text-yellow-600">({currentRating}/5)</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <button
               onClick={() => setShowRating(!showRating)}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
             >
-              {showRating ? 'Cancel' : 'Rate ⭐'}
+              {showRating ? 'Cancel' : currentRating !== 0 ? 'Update Rating ⭐' : 'Rate ⭐'}
             </button>
           </div>
           
           {showRating && (
             <div className="mt-4 p-4 bg-white rounded border">
               <div className="mb-3">
-                <label className="block text-sm font-medium mb-2">Your Rating:</label>
+                <label className="block text-sm font-medium mb-2">
+                  {currentRating !== 0 ? 'Update your rating:' : 'Your rating:'}
+                </label>
                 <StarRating />
               </div>
               <div className="flex gap-2">
@@ -271,7 +335,7 @@ const fetchMessages = () => {
                   disabled={rating === 0}
                   className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
                 >
-                  Submit Rating
+                  {currentRating > 0 ? 'Update Rating' : 'Submit Rating'}
                 </button>
                 <button
                   onClick={() => {
