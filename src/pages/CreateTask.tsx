@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import MessageBox, { type MessageState } from '../components/MessageBox';
+import TagSelector from '../components/TagSelector';
+import TagSuggestionModal from '../components/TagSuggestionModal';
 import { api } from '../lib/api';
+import type { Tag } from '../types/tag';
 
 const TASK_TYPES = [
   { value: 'number', label: 'Number' },
@@ -10,19 +13,33 @@ const TASK_TYPES = [
 const CreateTask: React.FC = () => {
   const [taskName, setTaskName] = useState('');
   const [taskType, setTaskType] = useState('number');
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [showTagSuggestionModal, setShowTagSuggestionModal] = useState(false);
   const [message, setMessage] = useState<MessageState>({ text: '', type: null });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Frontend validation: Check if at least one tag is selected
+    if (selectedTags.length === 0) {
+      setMessage({ text: 'Please select at least one tag before creating a task.', type: 'error' });
+      return;
+    }
+    
     const data = {
       taskName: taskName,
       numericalTask: taskType === 'number',
+      tagIds: selectedTags.map(tag => tag.id)
     };
 
     api.post('/tasks', data).then(() => {
       setMessage({ text: 'Community created successfully!', type: 'success' });
-    }).catch(() => {
-      setMessage({ text: 'Failed to create community.', type: 'error' });
+      setTaskName('');
+      setSelectedTags([]);
+    }).catch((error) => {
+      // Better error handling from backend
+      const errorMessage = error.response?.data?.message || 'Failed to create community.';
+      setMessage({ text: errorMessage, type: 'error' });
     });
   };
 
@@ -53,6 +70,23 @@ const CreateTask: React.FC = () => {
             ))}
           </select>
         </div>
+        
+        {/* Tag Selection */}
+        <div>
+          <TagSelector 
+            selectedTags={selectedTags}
+            onTagsChange={setSelectedTags}
+            maxTags={5}
+          />
+          <button
+            type="button"
+            onClick={() => setShowTagSuggestionModal(true)}
+            className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+          >
+            Can't find the right tag? Suggest a new one
+          </button>
+        </div>
+        
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
@@ -60,6 +94,14 @@ const CreateTask: React.FC = () => {
           Create Community
         </button>
       </form>
+      
+      <TagSuggestionModal
+        isOpen={showTagSuggestionModal}
+        onClose={() => setShowTagSuggestionModal(false)}
+        onSuggestionSubmitted={() => {
+          // Optionally refresh tags in TagSelector
+        }}
+      />
     </div>
   );
 };
