@@ -69,6 +69,15 @@ const Home: React.FC = () => {
   const [newComments, setNewComments] = useState<{[key: string]: string}>({});
   const [commentLoading, setCommentLoading] = useState<{[key: string]: boolean}>({});
 
+  // Join task form state
+  const [showJoinForm, setShowJoinForm] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<TaskSuggestion | null>(null);
+  const [joinFormData, setJoinFormData] = useState({
+    isNumerical: false,
+    taskInterval: 1,
+    taskIntervalType: 'DAYS'
+  });
+
   useEffect(() => {
     loadDashboardData();
   }, []);
@@ -108,40 +117,94 @@ const Home: React.FC = () => {
 
   const connectWithUser = async (userId: string) => {
     try {
-      await api.post(`/api/connections/request`, { targetUserId: userId });
+      // Find the user email from the suggestions to use in the API call
+      const user = communitySuggestions.find(u => u.id === userId);
+      if (!user) {
+        setMessage({
+          text: 'User not found.',
+          type: 'error'
+        });
+        return;
+      }
+
+      const response = await api.get(`/connections/${user.email}`);
       setMessage({
-        text: 'Connection request sent successfully!',
+        text: response.data || 'Connection request sent successfully!',
         type: 'success'
       });
       
       // Remove from suggestions
-      setCommunitySuggestions(prev => prev.filter(user => user.id !== userId));
+      setCommunitySuggestions(prev => prev.filter(u => u.id !== userId));
     } catch (error: any) {
       console.error('Error sending connection request:', error);
       setMessage({
-        text: 'Failed to send connection request. Please try again.',
+        text: error.response?.data || 'Failed to send connection request. Please try again.',
         type: 'error'
       });
     }
   };
 
   const joinTask = async (taskId: string) => {
+    const task = taskSuggestions.find(t => t.id === taskId);
+    if (!task) return;
+    
+    setSelectedTask(task);
+    setShowJoinForm(true);
+  };
+
+  const submitJoinTask = async () => {
+    if (!selectedTask) return;
+    
     try {
-      await api.post(`/api/tasks/${taskId}/join`);
-      setMessage({
-        text: 'Successfully joined the task!',
-        type: 'success'
-      });
+      console.log('Joining task with ID:', selectedTask.id);
       
-      // Remove from suggestions
-      setTaskSuggestions(prev => prev.filter(task => task.id !== taskId));
+      // Create a task instance for the user to "join" the task
+      const taskInstanceData = {
+        task: selectedTask.id, // Use 'task' instead of 'taskId' to match DTO
+        isNumerical: joinFormData.isNumerical,
+        taskInterval: joinFormData.taskInterval,
+        taskIntervalType: joinFormData.taskIntervalType
+      };
+      
+      console.log('Sending task instance data:', taskInstanceData);
+      
+      const response = await api.post('/task-instances', taskInstanceData);
+      
+      if (response.data) {
+        setMessage({
+          text: 'Successfully joined the task!',
+          type: 'success'
+        });
+        
+        // Remove from suggestions
+        setTaskSuggestions(prev => prev.filter(task => task.id !== selectedTask.id));
+        
+        // Close the form
+        setShowJoinForm(false);
+        setSelectedTask(null);
+        setJoinFormData({
+          isNumerical: false,
+          taskInterval: 1,
+          taskIntervalType: 'DAILY'
+        });
+      }
     } catch (error: any) {
       console.error('Error joining task:', error);
       setMessage({
-        text: 'Failed to join task. Please try again.',
+        text: error.response?.data?.message || 'Failed to join task. Please try again.',
         type: 'error'
       });
     }
+  };
+
+  const closeJoinForm = () => {
+    setShowJoinForm(false);
+    setSelectedTask(null);
+    setJoinFormData({
+      isNumerical: false,
+      taskInterval: 1,
+      taskIntervalType: 'DAILY'
+    });
   };
 
   // Comment functionality
@@ -587,6 +650,125 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Join Task Modal */}
+      {showJoinForm && selectedTask && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900">Join Task</h3>
+                <button
+                  onClick={closeJoinForm}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="mb-4">
+                <h4 className="font-semibold text-gray-900 mb-2">{selectedTask.taskName}</h4>
+                <p className="text-sm text-gray-600 mb-3">{selectedTask.description}</p>
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {selectedTask.tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white"
+                      style={{ backgroundColor: tag.color }}
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Task Type
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="false"
+                        checked={!joinFormData.isNumerical}
+                        onChange={(e) => setJoinFormData(prev => ({
+                          ...prev,
+                          isNumerical: e.target.value === 'true'
+                        }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">Simple (Yes/No completion)</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="true"
+                        checked={joinFormData.isNumerical}
+                        onChange={(e) => setJoinFormData(prev => ({
+                          ...prev,
+                          isNumerical: e.target.value === 'true'
+                        }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">Numerical (Track numbers/quantities)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    How often do you want to do this task?
+                  </label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="number"
+                      min="1"
+                      value={joinFormData.taskInterval}
+                      onChange={(e) => setJoinFormData(prev => ({
+                        ...prev,
+                        taskInterval: parseInt(e.target.value) || 1
+                      }))}
+                      className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <select
+                      value={joinFormData.taskIntervalType}
+                      onChange={(e) => setJoinFormData(prev => ({
+                        ...prev,
+                        taskIntervalType: e.target.value
+                      }))}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="HOURS">times per hour</option>
+                      <option value="DAYS">times per day</option>
+                      <option value="MONTHS">times per month</option>
+                      <option value="YEARS">times per year</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={closeJoinForm}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitJoinTask}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Join Task
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
