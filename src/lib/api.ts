@@ -72,8 +72,8 @@ export const api = {
   put: (endpoint: string, body?: any, headers?: Record<string, string>) => 
     apiCall(endpoint, { method: 'PUT', body, headers }),
     
-  delete: (endpoint: string, headers?: Record<string, string>) => 
-    apiCall(endpoint, { method: 'DELETE', headers }),
+  delete: (endpoint: string, body?: any, headers?: Record<string, string>) => 
+    apiCall(endpoint, { method: 'DELETE', body, headers }),
     
   patch: (endpoint: string, body?: any, headers?: Record<string, string>) => 
     apiCall(endpoint, { method: 'PATCH', body, headers }),
