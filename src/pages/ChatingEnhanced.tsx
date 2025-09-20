@@ -50,6 +50,7 @@ const ChatPage: React.FC = () => {
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
 
   const refreshRate = 5;
+  const seenCheckRate = 2; // Check seen status every 2 seconds
   let isMounted = true;
 
 const fetchMessages = () => {
@@ -66,6 +67,29 @@ const fetchMessages = () => {
         if (isMounted) {
           setMessage({ text: 'Failed to load messages.', type: 'error' });
         }
+      });
+  };
+
+  const checkSeenStatus = () => {
+    if (!chatId) return;
+    
+    api.get(`/messages/${chatId}/status`)
+      .then(res => {
+        if (isMounted) {
+          setMessages(prev => {
+            const newMessages = res.data;
+            // Only update if there are actual changes to seen status
+            const hasSeenChanges = prev.some((prevMsg, index) => {
+              const newMsg = newMessages[index];
+              return newMsg && prevMsg.seen !== newMsg.seen;
+            });
+            
+            return hasSeenChanges ? newMessages : prev;
+          });
+        }
+      })
+      .catch(err => {
+        console.error('Error checking seen status:', err);
       });
   };
 
@@ -97,10 +121,14 @@ const fetchMessages = () => {
 
     fetchMessages(); // initial fetch
     const interval = setInterval(fetchMessages, refreshRate * 1000);
+    
+    // Separate interval for checking seen status more frequently
+    const seenInterval = setInterval(checkSeenStatus, seenCheckRate * 1000);
 
     return () => {
       isMounted = false;
       clearInterval(interval);
+      clearInterval(seenInterval);
     };  
   }, [chatId]);
 
@@ -264,9 +292,25 @@ const fetchMessages = () => {
                     isMyMessage(msg) ? 'text-blue-100' : 'text-gray-500'
                   }`}>
                     <span>{formatTime(msg.createdAt)}</span>
-                    {msg.isEdited && !msg.isDeleted && (
-                      <span className="italic">edited</span>
-                    )}
+                    <div className="flex items-center space-x-2">
+                      {msg.isEdited && !msg.isDeleted && (
+                        <span className="italic">edited</span>
+                      )}
+                      {/* Seen indicator for sent messages */}
+                      {isMyMessage(msg) && !msg.isDeleted && (
+                        <div className="flex items-center transition-all duration-300">
+                          {msg.seen ? (
+                            <span className="text-blue-200 font-semibold" title="Seen">
+                              ✓✓
+                            </span>
+                          ) : (
+                            <span className="text-blue-300 opacity-70" title="Sent">
+                              ✓
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
                   {/* Message Actions */}
