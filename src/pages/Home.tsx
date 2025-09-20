@@ -187,7 +187,7 @@ const Home: React.FC = () => {
         setJoinFormData({
           isNumerical: false,
           taskInterval: 1,
-          taskIntervalType: 'DAILY'
+          taskIntervalType: 'DAYS'
         });
       }
     } catch (error: any) {
@@ -205,7 +205,7 @@ const Home: React.FC = () => {
     setJoinFormData({
       isNumerical: false,
       taskInterval: 1,
-      taskIntervalType: 'DAILY'
+      taskIntervalType: 'DAYS'
     });
   };
 
